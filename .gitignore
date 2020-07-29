@@ -51,6 +51,19 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-
+# hariboteos
 *.img
+*.lst
+*.bin
+*.bim
+*.hrb
+*.map
+*.sys
+*.gas
+*.obj
+**/z_tools
+
+# local
+cmd.exe.lnk
+hariboteos.lnk
 
