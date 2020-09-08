@@ -62,8 +62,8 @@ dkms.conf
 *.gas
 *.obj
 **/z_tools
+bootpack.nas
 
 # local
 cmd.exe.lnk
 hariboteos.lnk
-
