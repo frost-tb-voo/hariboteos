@@ -1,0 +1,452 @@
+--- ./harib03a/Makefile	2020-09-08 10:11:11.000000000 +0900
++++ ./harib03c/Makefile	2020-09-08 10:23:04.000000000 +0900
+@@ -1,4 +1,6 @@
+-TOLSET   = F:\TEMP\hariboteos\hariboteos\tolset
++TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
++
++OBJS_BOOTPACK = bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj
+ 
+ TOOLPATH = ${TOLSET}/z_tools/
+ INCPATH  = ${TOLSET}/z_tools/haribote/
+@@ -30,46 +32,16 @@
+ asmhead.bin : asmhead.nas Makefile
+ 	$(NASK) asmhead.nas asmhead.bin asmhead.lst
+ 
+-bootpack.gas : bootpack.c Makefile
+-	$(CC1) -o bootpack.gas bootpack.c
+-
+-bootpack.nas : bootpack.gas Makefile
+-	$(GAS2NASK) bootpack.gas bootpack.nas
+-
+-bootpack.obj : bootpack.nas Makefile
+-	$(NASK) bootpack.nas bootpack.obj bootpack.lst
+-
+-naskfunc.obj : naskfunc.nas Makefile
+-	$(NASK) naskfunc.nas naskfunc.obj naskfunc.lst
+-
+ hankaku.bin : hankaku.txt Makefile
+ 	$(MAKEFONT) hankaku.txt hankaku.bin
+ 
+ hankaku.obj : hankaku.bin Makefile
+ 	$(BIN2OBJ) hankaku.bin hankaku.obj _hankaku
+ 
+-graphic.gas : graphic.c Makefile
+-	$(CC1) -o graphic.gas graphic.c
+-
+-graphic.nas : graphic.gas Makefile
+-	$(GAS2NASK) graphic.gas graphic.nas
+-
+-graphic.obj : graphic.nas Makefile
+-	$(NASK) graphic.nas graphic.obj graphic.lst
+-
+-dsctbl.gas : dsctbl.c Makefile
+-	$(CC1) -o dsctbl.gas dsctbl.c
+-
+-dsctbl.nas : dsctbl.gas Makefile
+-	$(GAS2NASK) dsctbl.gas dsctbl.nas
+-
+-dsctbl.obj : dsctbl.nas Makefile
+-	$(NASK) dsctbl.nas dsctbl.obj dsctbl.lst
+-
+-bootpack.bim : bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj Makefile
+-	XCOPY ${TOLSET}\z_tools\haribote ..\z_tools\haribote /I /Y
++bootpack.bim : $(OBJS_BOOTPACK) Makefile
++	XCOPY ${TOLSET}\z_tools\haribote ..\z_tools\haribote /I /Y 
+ 	$(OBJ2BIM) @$(RULEFILE) out:bootpack.bim stack:3136k map:bootpack.map \
+-		bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj
++		$(OBJS_BOOTPACK)
+ # 3MB+64KB=3136KB
+ 
+ bootpack.hrb : bootpack.bim Makefile
+@@ -84,6 +56,17 @@
+ 		copy from:haribote.sys to:@: \
+ 		imgout:haribote.img
+ 
++# 一般規則
++
++%.gas : %.c Makefile
++	$(CC1) -o $*.gas $*.c
++
++%.nas : %.gas Makefile
++	$(GAS2NASK) $*.gas $*.nas
++
++%.obj : %.nas Makefile
++	$(NASK) $*.nas $*.obj $*.lst
++
+ # コマンド
+ 
+ img :
+@@ -101,11 +84,7 @@
+ clean :
+ 	-$(DEL) *.bin
+ 	-$(DEL) *.lst
+-	-$(DEL) *.gas
+ 	-$(DEL) *.obj
+-	-$(DEL) bootpack.nas
+-	-$(DEL) graphic.nas
+-	-$(DEL) dsctbl.nas
+ 	-$(DEL) bootpack.map
+ 	-$(DEL) bootpack.bim
+ 	-$(DEL) bootpack.hrb
+--- ./harib03a/Makefile	2020-09-08 10:11:11.000000000 +0900
++++ ./harib03d/Makefile	2020-09-08 12:07:29.806955572 +0900
+@@ -1,4 +1,7 @@
+-TOLSET   = F:\TEMP\hariboteos\hariboteos\tolset
++TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
++
++OBJS_BOOTPACK = bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj \
++		int.obj
+ 
+ TOOLPATH = ${TOLSET}/z_tools/
+ INCPATH  = ${TOLSET}/z_tools/haribote/
+@@ -30,46 +33,16 @@
+ asmhead.bin : asmhead.nas Makefile
+ 	$(NASK) asmhead.nas asmhead.bin asmhead.lst
+ 
+-bootpack.gas : bootpack.c Makefile
+-	$(CC1) -o bootpack.gas bootpack.c
+-
+-bootpack.nas : bootpack.gas Makefile
+-	$(GAS2NASK) bootpack.gas bootpack.nas
+-
+-bootpack.obj : bootpack.nas Makefile
+-	$(NASK) bootpack.nas bootpack.obj bootpack.lst
+-
+-naskfunc.obj : naskfunc.nas Makefile
+-	$(NASK) naskfunc.nas naskfunc.obj naskfunc.lst
+-
+ hankaku.bin : hankaku.txt Makefile
+ 	$(MAKEFONT) hankaku.txt hankaku.bin
+ 
+ hankaku.obj : hankaku.bin Makefile
+ 	$(BIN2OBJ) hankaku.bin hankaku.obj _hankaku
+ 
+-graphic.gas : graphic.c Makefile
+-	$(CC1) -o graphic.gas graphic.c
+-
+-graphic.nas : graphic.gas Makefile
+-	$(GAS2NASK) graphic.gas graphic.nas
+-
+-graphic.obj : graphic.nas Makefile
+-	$(NASK) graphic.nas graphic.obj graphic.lst
+-
+-dsctbl.gas : dsctbl.c Makefile
+-	$(CC1) -o dsctbl.gas dsctbl.c
+-
+-dsctbl.nas : dsctbl.gas Makefile
+-	$(GAS2NASK) dsctbl.gas dsctbl.nas
+-
+-dsctbl.obj : dsctbl.nas Makefile
+-	$(NASK) dsctbl.nas dsctbl.obj dsctbl.lst
+-
+-bootpack.bim : bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj Makefile
+-	XCOPY ${TOLSET}\z_tools\haribote ..\z_tools\haribote /I /Y
++bootpack.bim : $(OBJS_BOOTPACK) Makefile
++	XCOPY ${TOLSET}\z_tools\haribote ..\z_tools\haribote /I /Y 
+ 	$(OBJ2BIM) @$(RULEFILE) out:bootpack.bim stack:3136k map:bootpack.map \
+-		bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj
++		$(OBJS_BOOTPACK)
+ # 3MB+64KB=3136KB
+ 
+ bootpack.hrb : bootpack.bim Makefile
+@@ -84,6 +57,17 @@
+ 		copy from:haribote.sys to:@: \
+ 		imgout:haribote.img
+ 
++# 一般規則
++
++%.gas : %.c Makefile
++	$(CC1) -o $*.gas $*.c
++
++%.nas : %.gas Makefile
++	$(GAS2NASK) $*.gas $*.nas
++
++%.obj : %.nas Makefile
++	$(NASK) $*.nas $*.obj $*.lst
++
+ # コマンド
+ 
+ img :
+@@ -101,11 +85,7 @@
+ clean :
+ 	-$(DEL) *.bin
+ 	-$(DEL) *.lst
+-	-$(DEL) *.gas
+ 	-$(DEL) *.obj
+-	-$(DEL) bootpack.nas
+-	-$(DEL) graphic.nas
+-	-$(DEL) dsctbl.nas
+ 	-$(DEL) bootpack.map
+ 	-$(DEL) bootpack.bim
+ 	-$(DEL) bootpack.hrb
+--- ./harib03a/Makefile	2020-09-08 10:11:11.000000000 +0900
++++ ./harib03b/Makefile	2020-09-08 10:17:07.000000000 +0900
+@@ -1,4 +1,6 @@
+-TOLSET   = F:\TEMP\hariboteos\hariboteos\tolset
++TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
++
++OBJS_BOOTPACK = bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj
+ 
+ TOOLPATH = ${TOLSET}/z_tools/
+ INCPATH  = ${TOLSET}/z_tools/haribote/
+@@ -30,46 +32,16 @@
+ asmhead.bin : asmhead.nas Makefile
+ 	$(NASK) asmhead.nas asmhead.bin asmhead.lst
+ 
+-bootpack.gas : bootpack.c Makefile
+-	$(CC1) -o bootpack.gas bootpack.c
+-
+-bootpack.nas : bootpack.gas Makefile
+-	$(GAS2NASK) bootpack.gas bootpack.nas
+-
+-bootpack.obj : bootpack.nas Makefile
+-	$(NASK) bootpack.nas bootpack.obj bootpack.lst
+-
+-naskfunc.obj : naskfunc.nas Makefile
+-	$(NASK) naskfunc.nas naskfunc.obj naskfunc.lst
+-
+ hankaku.bin : hankaku.txt Makefile
+ 	$(MAKEFONT) hankaku.txt hankaku.bin
+ 
+ hankaku.obj : hankaku.bin Makefile
+ 	$(BIN2OBJ) hankaku.bin hankaku.obj _hankaku
+ 
+-graphic.gas : graphic.c Makefile
+-	$(CC1) -o graphic.gas graphic.c
+-
+-graphic.nas : graphic.gas Makefile
+-	$(GAS2NASK) graphic.gas graphic.nas
+-
+-graphic.obj : graphic.nas Makefile
+-	$(NASK) graphic.nas graphic.obj graphic.lst
+-
+-dsctbl.gas : dsctbl.c Makefile
+-	$(CC1) -o dsctbl.gas dsctbl.c
+-
+-dsctbl.nas : dsctbl.gas Makefile
+-	$(GAS2NASK) dsctbl.gas dsctbl.nas
+-
+-dsctbl.obj : dsctbl.nas Makefile
+-	$(NASK) dsctbl.nas dsctbl.obj dsctbl.lst
+-
+-bootpack.bim : bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj Makefile
+-	XCOPY ${TOLSET}\z_tools\haribote ..\z_tools\haribote /I /Y
++bootpack.bim : $(OBJS_BOOTPACK) Makefile
++	XCOPY ${TOLSET}\z_tools\haribote ..\z_tools\haribote /I /Y 
+ 	$(OBJ2BIM) @$(RULEFILE) out:bootpack.bim stack:3136k map:bootpack.map \
+-		bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj
++		$(OBJS_BOOTPACK)
+ # 3MB+64KB=3136KB
+ 
+ bootpack.hrb : bootpack.bim Makefile
+@@ -84,6 +56,17 @@
+ 		copy from:haribote.sys to:@: \
+ 		imgout:haribote.img
+ 
++# 一般規則
++
++%.gas : %.c Makefile
++	$(CC1) -o $*.gas $*.c
++
++%.nas : %.gas Makefile
++	$(GAS2NASK) $*.gas $*.nas
++
++%.obj : %.nas Makefile
++	$(NASK) $*.nas $*.obj $*.lst
++
+ # コマンド
+ 
+ img :
+@@ -101,11 +84,7 @@
+ clean :
+ 	-$(DEL) *.bin
+ 	-$(DEL) *.lst
+-	-$(DEL) *.gas
+ 	-$(DEL) *.obj
+-	-$(DEL) bootpack.nas
+-	-$(DEL) graphic.nas
+-	-$(DEL) dsctbl.nas
+ 	-$(DEL) bootpack.map
+ 	-$(DEL) bootpack.bim
+ 	-$(DEL) bootpack.hrb
+--- ./harib03a/Makefile	2020-09-08 10:11:11.000000000 +0900
++++ ./z_tools/haribote/Makefile	2020-09-08 10:47:28.000000000 +0900
+@@ -1,4 +1,6 @@
+-TOLSET   = F:\TEMP\hariboteos\hariboteos\tolset
++TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
++
++OBJS_BOOTPACK = bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj int.obj
+ 
+ TOOLPATH = ${TOLSET}/z_tools/
+ INCPATH  = ${TOLSET}/z_tools/haribote/
+@@ -30,46 +32,16 @@
+ asmhead.bin : asmhead.nas Makefile
+ 	$(NASK) asmhead.nas asmhead.bin asmhead.lst
+ 
+-bootpack.gas : bootpack.c Makefile
+-	$(CC1) -o bootpack.gas bootpack.c
+-
+-bootpack.nas : bootpack.gas Makefile
+-	$(GAS2NASK) bootpack.gas bootpack.nas
+-
+-bootpack.obj : bootpack.nas Makefile
+-	$(NASK) bootpack.nas bootpack.obj bootpack.lst
+-
+-naskfunc.obj : naskfunc.nas Makefile
+-	$(NASK) naskfunc.nas naskfunc.obj naskfunc.lst
+-
+ hankaku.bin : hankaku.txt Makefile
+ 	$(MAKEFONT) hankaku.txt hankaku.bin
+ 
+ hankaku.obj : hankaku.bin Makefile
+ 	$(BIN2OBJ) hankaku.bin hankaku.obj _hankaku
+ 
+-graphic.gas : graphic.c Makefile
+-	$(CC1) -o graphic.gas graphic.c
+-
+-graphic.nas : graphic.gas Makefile
+-	$(GAS2NASK) graphic.gas graphic.nas
+-
+-graphic.obj : graphic.nas Makefile
+-	$(NASK) graphic.nas graphic.obj graphic.lst
+-
+-dsctbl.gas : dsctbl.c Makefile
+-	$(CC1) -o dsctbl.gas dsctbl.c
+-
+-dsctbl.nas : dsctbl.gas Makefile
+-	$(GAS2NASK) dsctbl.gas dsctbl.nas
+-
+-dsctbl.obj : dsctbl.nas Makefile
+-	$(NASK) dsctbl.nas dsctbl.obj dsctbl.lst
+-
+-bootpack.bim : bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj Makefile
+-	XCOPY ${TOLSET}\z_tools\haribote ..\z_tools\haribote /I /Y
++bootpack.bim : $(OBJS_BOOTPACK) Makefile
++	XCOPY ${TOLSET}\z_tools\haribote ..\z_tools\haribote /I /Y 
+ 	$(OBJ2BIM) @$(RULEFILE) out:bootpack.bim stack:3136k map:bootpack.map \
+-		bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj
++		$(OBJS_BOOTPACK)
+ # 3MB+64KB=3136KB
+ 
+ bootpack.hrb : bootpack.bim Makefile
+@@ -84,6 +56,17 @@
+ 		copy from:haribote.sys to:@: \
+ 		imgout:haribote.img
+ 
++# 一般規則
++
++%.gas : %.c Makefile
++	$(CC1) -o $*.gas $*.c
++
++%.nas : %.gas Makefile
++	$(GAS2NASK) $*.gas $*.nas
++
++%.obj : %.nas Makefile
++	$(NASK) $*.nas $*.obj $*.lst
++
+ # コマンド
+ 
+ img :
+@@ -101,11 +84,7 @@
+ clean :
+ 	-$(DEL) *.bin
+ 	-$(DEL) *.lst
+-	-$(DEL) *.gas
+ 	-$(DEL) *.obj
+-	-$(DEL) bootpack.nas
+-	-$(DEL) graphic.nas
+-	-$(DEL) dsctbl.nas
+ 	-$(DEL) bootpack.map
+ 	-$(DEL) bootpack.bim
+ 	-$(DEL) bootpack.hrb
+--- ./harib03a/Makefile	2020-09-08 10:11:11.000000000 +0900
++++ ./harib03e/Makefile	2020-09-08 11:43:22.000000000 +0900
+@@ -1,4 +1,7 @@
+-TOLSET   = F:\TEMP\hariboteos\hariboteos\tolset
++TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
++
++OBJS_BOOTPACK = bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj \
++		int.obj
+ 
+ TOOLPATH = ${TOLSET}/z_tools/
+ INCPATH  = ${TOLSET}/z_tools/haribote/
+@@ -30,46 +33,16 @@
+ asmhead.bin : asmhead.nas Makefile
+ 	$(NASK) asmhead.nas asmhead.bin asmhead.lst
+ 
+-bootpack.gas : bootpack.c Makefile
+-	$(CC1) -o bootpack.gas bootpack.c
+-
+-bootpack.nas : bootpack.gas Makefile
+-	$(GAS2NASK) bootpack.gas bootpack.nas
+-
+-bootpack.obj : bootpack.nas Makefile
+-	$(NASK) bootpack.nas bootpack.obj bootpack.lst
+-
+-naskfunc.obj : naskfunc.nas Makefile
+-	$(NASK) naskfunc.nas naskfunc.obj naskfunc.lst
+-
+ hankaku.bin : hankaku.txt Makefile
+ 	$(MAKEFONT) hankaku.txt hankaku.bin
+ 
+ hankaku.obj : hankaku.bin Makefile
+ 	$(BIN2OBJ) hankaku.bin hankaku.obj _hankaku
+ 
+-graphic.gas : graphic.c Makefile
+-	$(CC1) -o graphic.gas graphic.c
+-
+-graphic.nas : graphic.gas Makefile
+-	$(GAS2NASK) graphic.gas graphic.nas
+-
+-graphic.obj : graphic.nas Makefile
+-	$(NASK) graphic.nas graphic.obj graphic.lst
+-
+-dsctbl.gas : dsctbl.c Makefile
+-	$(CC1) -o dsctbl.gas dsctbl.c
+-
+-dsctbl.nas : dsctbl.gas Makefile
+-	$(GAS2NASK) dsctbl.gas dsctbl.nas
+-
+-dsctbl.obj : dsctbl.nas Makefile
+-	$(NASK) dsctbl.nas dsctbl.obj dsctbl.lst
+-
+-bootpack.bim : bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj Makefile
+-	XCOPY ${TOLSET}\z_tools\haribote ..\z_tools\haribote /I /Y
++bootpack.bim : $(OBJS_BOOTPACK) Makefile
++	XCOPY ${TOLSET}\z_tools\haribote ..\z_tools\haribote /I /Y 
+ 	$(OBJ2BIM) @$(RULEFILE) out:bootpack.bim stack:3136k map:bootpack.map \
+-		bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj
++		$(OBJS_BOOTPACK)
+ # 3MB+64KB=3136KB
+ 
+ bootpack.hrb : bootpack.bim Makefile
+@@ -84,6 +57,17 @@
+ 		copy from:haribote.sys to:@: \
+ 		imgout:haribote.img
+ 
++# 一般規則
++
++%.gas : %.c Makefile
++	$(CC1) -o $*.gas $*.c
++
++%.nas : %.gas Makefile
++	$(GAS2NASK) $*.gas $*.nas
++
++%.obj : %.nas Makefile
++	$(NASK) $*.nas $*.obj $*.lst
++
+ # コマンド
+ 
+ img :
+@@ -101,11 +85,7 @@
+ clean :
+ 	-$(DEL) *.bin
+ 	-$(DEL) *.lst
+-	-$(DEL) *.gas
+ 	-$(DEL) *.obj
+-	-$(DEL) bootpack.nas
+-	-$(DEL) graphic.nas
+-	-$(DEL) dsctbl.nas
+ 	-$(DEL) bootpack.map
+ 	-$(DEL) bootpack.bim
+ 	-$(DEL) bootpack.hrb
