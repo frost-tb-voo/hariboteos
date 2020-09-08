@@ -1,4 +1,3 @@
-# TOLSET     = F:/TEMP/hariboteos/hariboteos/tolset
 TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
 
 TOOLPATH = ${TOLSET}/z_tools/
@@ -19,16 +18,14 @@ default :
 ipl.bin : ipl.nas Makefile
 	$(NASK) ipl.nas ipl.bin ipl.lst
 
-haribote.sys : haribote.nas Makefile
-	$(NASK) haribote.nas haribote.sys haribote.lst
-
-haribote.img : ipl.bin haribote.sys Makefile
+haribote.img : ipl.bin Makefile
 	$(EDIMG)   imgin:${TOLSET}/z_tools/fdimg0at.tek \
-		wbinimg src:ipl.bin len:512 from:0 to:0 \
-		copy from:haribote.sys to:@: \
-		imgout:haribote.img
+		wbinimg src:ipl.bin len:512 from:0 to:0   imgout:haribote.img
 
 # コマンド
+
+asm :
+	$(MAKE) ipl.bin
 
 img :
 	$(MAKE) haribote.img
@@ -45,8 +42,6 @@ install :
 clean :
 	-$(DEL) ipl.bin
 	-$(DEL) ipl.lst
-	-$(DEL) haribote.sys
-	-$(DEL) haribote.lst
 
 src_only :
 	$(MAKE) clean
