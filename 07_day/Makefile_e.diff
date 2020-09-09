@@ -1,47 +1,4 @@
---- ./harib04e/Makefile	2020-09-08 12:02:04.207079293 +0900
-+++ ./harib04f/Makefile	2005-03-28 21:53:54.000000000 +0900
-@@ -1,10 +1,8 @@
--TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
--
- OBJS_BOOTPACK = bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj \
- 		int.obj fifo.obj
- 
--TOOLPATH = ${TOLSET}/z_tools/
--INCPATH  = ${TOLSET}/z_tools/haribote/
-+TOOLPATH = ../z_tools/
-+INCPATH  = ../z_tools/haribote/
- 
- MAKE     = $(TOOLPATH)make.exe -r
- NASK     = $(TOOLPATH)nask.exe
-@@ -40,7 +38,6 @@
- 	$(BIN2OBJ) hankaku.bin hankaku.obj _hankaku
- 
- bootpack.bim : $(OBJS_BOOTPACK) Makefile
--	XCOPY ${TOLSET}\z_tools\haribote ..\z_tools\haribote /I /Y 
- 	$(OBJ2BIM) @$(RULEFILE) out:bootpack.bim stack:3136k map:bootpack.map \
- 		$(OBJS_BOOTPACK)
- # 3MB+64KB=3136KB
-@@ -52,7 +49,7 @@
- 	copy /B asmhead.bin+bootpack.hrb haribote.sys
- 
- haribote.img : ipl10.bin haribote.sys Makefile
--	$(EDIMG)   imgin:${TOLSET}/z_tools/fdimg0at.tek \
-+	$(EDIMG)   imgin:../z_tools/fdimg0at.tek \
- 		wbinimg src:ipl10.bin len:512 from:0 to:0 \
- 		copy from:haribote.sys to:@: \
- 		imgout:haribote.img
-@@ -75,8 +72,8 @@
- 
- run :
- 	$(MAKE) img
--	$(COPY) haribote.img ${TOLSET}\z_tools\qemu\fdimage0.bin
--	$(MAKE) -C ${TOLSET}/z_tools/qemu
-+	$(COPY) haribote.img ..\z_tools\qemu\fdimage0.bin
-+	$(MAKE) -C ../z_tools/qemu
- 
- install :
- 	$(MAKE) img
---- ./harib04e/Makefile	2020-09-08 12:02:04.207079293 +0900
+--- ./harib04e/Makefile	2020-09-08 12:02:04.000000000 +0900
 +++ ./harib04d/Makefile	2020-09-08 11:51:00.000000000 +0900
 @@ -1,7 +1,6 @@
  TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
@@ -52,8 +9,8 @@
  
  TOOLPATH = ${TOLSET}/z_tools/
  INCPATH  = ${TOLSET}/z_tools/haribote/
---- ./harib04e/Makefile	2020-09-08 12:02:04.207079293 +0900
-+++ ./harib04a/Makefile	2020-09-08 11:59:28.878685972 +0900
+--- ./harib04e/Makefile	2020-09-08 12:02:04.000000000 +0900
++++ ./harib04a/Makefile	2020-09-08 11:59:28.000000000 +0900
 @@ -1,7 +1,7 @@
  TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
  
@@ -63,7 +20,7 @@
  
  TOOLPATH = ${TOLSET}/z_tools/
  INCPATH  = ${TOLSET}/z_tools/haribote/
---- ./harib04e/Makefile	2020-09-08 12:02:04.207079293 +0900
+--- ./harib04e/Makefile	2020-09-08 12:02:04.000000000 +0900
 +++ ./harib04b/Makefile	2020-09-08 11:51:00.000000000 +0900
 @@ -1,7 +1,6 @@
  TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
@@ -74,7 +31,7 @@
  
  TOOLPATH = ${TOLSET}/z_tools/
  INCPATH  = ${TOLSET}/z_tools/haribote/
---- ./harib04e/Makefile	2020-09-08 12:02:04.207079293 +0900
+--- ./harib04e/Makefile	2020-09-08 12:02:04.000000000 +0900
 +++ ./harib04c/Makefile	2020-09-08 11:51:00.000000000 +0900
 @@ -1,7 +1,6 @@
  TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
@@ -85,50 +42,7 @@
  
  TOOLPATH = ${TOLSET}/z_tools/
  INCPATH  = ${TOLSET}/z_tools/haribote/
---- ./harib04e/Makefile	2020-09-08 12:02:04.207079293 +0900
-+++ ./harib04g/Makefile	2005-03-28 21:53:54.000000000 +0900
-@@ -1,10 +1,8 @@
--TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
--
- OBJS_BOOTPACK = bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj \
- 		int.obj fifo.obj
- 
--TOOLPATH = ${TOLSET}/z_tools/
--INCPATH  = ${TOLSET}/z_tools/haribote/
-+TOOLPATH = ../z_tools/
-+INCPATH  = ../z_tools/haribote/
- 
- MAKE     = $(TOOLPATH)make.exe -r
- NASK     = $(TOOLPATH)nask.exe
-@@ -40,7 +38,6 @@
- 	$(BIN2OBJ) hankaku.bin hankaku.obj _hankaku
- 
- bootpack.bim : $(OBJS_BOOTPACK) Makefile
--	XCOPY ${TOLSET}\z_tools\haribote ..\z_tools\haribote /I /Y 
- 	$(OBJ2BIM) @$(RULEFILE) out:bootpack.bim stack:3136k map:bootpack.map \
- 		$(OBJS_BOOTPACK)
- # 3MB+64KB=3136KB
-@@ -52,7 +49,7 @@
- 	copy /B asmhead.bin+bootpack.hrb haribote.sys
- 
- haribote.img : ipl10.bin haribote.sys Makefile
--	$(EDIMG)   imgin:${TOLSET}/z_tools/fdimg0at.tek \
-+	$(EDIMG)   imgin:../z_tools/fdimg0at.tek \
- 		wbinimg src:ipl10.bin len:512 from:0 to:0 \
- 		copy from:haribote.sys to:@: \
- 		imgout:haribote.img
-@@ -75,8 +72,8 @@
- 
- run :
- 	$(MAKE) img
--	$(COPY) haribote.img ${TOLSET}\z_tools\qemu\fdimage0.bin
--	$(MAKE) -C ${TOLSET}/z_tools/qemu
-+	$(COPY) haribote.img ..\z_tools\qemu\fdimage0.bin
-+	$(MAKE) -C ../z_tools/qemu
- 
- install :
- 	$(MAKE) img
---- ./harib04e/Makefile	2020-09-08 12:02:04.207079293 +0900
+--- ./harib04e/Makefile	2020-09-08 12:02:04.000000000 +0900
 +++ ./z_tools/haribote/Makefile	2020-09-08 11:51:00.000000000 +0900
 @@ -1,7 +1,6 @@
  TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
