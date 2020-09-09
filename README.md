@@ -6,7 +6,7 @@
 - [AT互換機のBIOS仕様など](http://oswiki.osask.jp/?hardwares)
 
 ### Prerequisite
-Windows 2000 or later.
+Windows 2000 or later (I'm executing on Win10).
 
 ### How
 
