@@ -19,7 +19,7 @@ Makefile 変更点.
   - 386 には cpu に memory cache が載っていなかった
   - 諸々の機能追加により 486 では６倍ほど高速になったらしい
 - memtest 関数を c で自作
-  - [09_day\harib06b\bootpack.c](09_day\harib06b\bootpack.c)#L97
+  - [09_day\harib06b\bootpack.c](09_day/harib06b/bootpack.c)#L97
   - eflags check と CR0 register への書き込み
 - memtest_sub (#L130)
   - ４バイト分ずつ番地を増やしながら
@@ -36,7 +36,7 @@ Makefile 変更点.
 - コンパイル後のアセンブリを見ると XOR 命令が消えている
   - C compiler の最適化によるもの
 - memtest 関数をアセンブリで書き直す
-  - [09_day\harib06c\naskfunc.nas](09_day\harib06c\naskfunc.nas)#L153
+  - [09_day\harib06c\naskfunc.nas](09_day/harib06c/naskfunc.nas)#L153
 
 ### メモリ管理に挑戦 (d)
 
@@ -51,7 +51,7 @@ Makefile 変更点.
   - この方法はメモリを使わず速いが, 飛び地ができる，管理が複雑になるという問題がある
   - でフラグ前のディスクっぽい
 - alloc と free の実装
-  - [09_day\harib06d\bootpack.c](09_day\harib06d\bootpack.c)
+  - [09_day\harib06d\bootpack.c](09_day/harib06d/bootpack.c)
   - free のほうは場合分けがめんどくさい
   - 今回は，飛び地だらけになってメモリが足りなくなっても特に対処はしない
   - 0x003c0000 番地以降をメモリ管理に使用する
