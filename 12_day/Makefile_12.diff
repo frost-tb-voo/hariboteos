@@ -1,0 +1,77 @@
+--- ../11_day/harib08h/Makefile	2020-09-10 02:40:08.303549361 +0900
++++ ./harib09c/Makefile	2020-10-06 00:36:10.463160625 +0900
+@@ -1,7 +1,7 @@
+ TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
+ 
+ OBJS_BOOTPACK = bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj \
+-		int.obj fifo.obj keyboard.obj mouse.obj memory.obj sheet.obj
++		int.obj fifo.obj keyboard.obj mouse.obj memory.obj sheet.obj timer.obj
+ 
+ TOOLPATH = ${TOLSET}/z_tools/
+ INCPATH  = ${TOLSET}/z_tools/haribote/
+--- ../11_day/harib08h/Makefile	2020-09-10 02:40:08.303549361 +0900
++++ ./harib09e/Makefile	2020-10-06 00:36:10.467161817 +0900
+@@ -1,7 +1,7 @@
+ TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
+ 
+ OBJS_BOOTPACK = bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj \
+-		int.obj fifo.obj keyboard.obj mouse.obj memory.obj sheet.obj
++		int.obj fifo.obj keyboard.obj mouse.obj memory.obj sheet.obj timer.obj
+ 
+ TOOLPATH = ${TOLSET}/z_tools/
+ INCPATH  = ${TOLSET}/z_tools/haribote/
+--- ../11_day/harib08h/Makefile	2020-09-10 02:40:08.303549361 +0900
++++ ./harib09d/Makefile	2020-10-06 00:36:10.467161817 +0900
+@@ -1,7 +1,7 @@
+ TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
+ 
+ OBJS_BOOTPACK = bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj \
+-		int.obj fifo.obj keyboard.obj mouse.obj memory.obj sheet.obj
++		int.obj fifo.obj keyboard.obj mouse.obj memory.obj sheet.obj timer.obj
+ 
+ TOOLPATH = ${TOLSET}/z_tools/
+ INCPATH  = ${TOLSET}/z_tools/haribote/
+--- ../11_day/harib08h/Makefile	2020-09-10 02:40:08.303549361 +0900
++++ ./harib09a/Makefile	2020-10-06 00:34:28.687034740 +0900
+@@ -1,7 +1,7 @@
+ TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
+ 
+ OBJS_BOOTPACK = bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj \
+-		int.obj fifo.obj keyboard.obj mouse.obj memory.obj sheet.obj
++		int.obj fifo.obj keyboard.obj mouse.obj memory.obj sheet.obj timer.obj
+ 
+ TOOLPATH = ${TOLSET}/z_tools/
+ INCPATH  = ${TOLSET}/z_tools/haribote/
+--- ../11_day/harib08h/Makefile	2020-09-10 02:40:08.303549361 +0900
++++ ./harib09f/Makefile	2020-10-06 00:36:10.471163009 +0900
+@@ -1,7 +1,7 @@
+ TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
+ 
+ OBJS_BOOTPACK = bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj \
+-		int.obj fifo.obj keyboard.obj mouse.obj memory.obj sheet.obj
++		int.obj fifo.obj keyboard.obj mouse.obj memory.obj sheet.obj timer.obj
+ 
+ TOOLPATH = ${TOLSET}/z_tools/
+ INCPATH  = ${TOLSET}/z_tools/haribote/
+--- ../11_day/harib08h/Makefile	2020-09-10 02:40:08.303549361 +0900
++++ ./harib09g/Makefile	2020-10-06 00:36:10.471163009 +0900
+@@ -1,7 +1,7 @@
+ TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
+ 
+ OBJS_BOOTPACK = bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj \
+-		int.obj fifo.obj keyboard.obj mouse.obj memory.obj sheet.obj
++		int.obj fifo.obj keyboard.obj mouse.obj memory.obj sheet.obj timer.obj
+ 
+ TOOLPATH = ${TOLSET}/z_tools/
+ INCPATH  = ${TOLSET}/z_tools/haribote/
+--- ../11_day/harib08h/Makefile	2020-09-10 02:40:08.303549361 +0900
++++ ./harib09b/Makefile	2020-10-06 00:36:10.475164201 +0900
+@@ -1,7 +1,7 @@
+ TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
+ 
+ OBJS_BOOTPACK = bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj \
+-		int.obj fifo.obj keyboard.obj mouse.obj memory.obj sheet.obj
++		int.obj fifo.obj keyboard.obj mouse.obj memory.obj sheet.obj timer.obj
+ 
+ TOOLPATH = ${TOLSET}/z_tools/
+ INCPATH  = ${TOLSET}/z_tools/haribote/
