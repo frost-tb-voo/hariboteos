@@ -1,0 +1,64 @@
+diff -u ./16_day/harib13e/bootpack.c ./17_day/harib14a/bootpack.c
+--- ./16_day/harib13e/bootpack.c	2006-03-23 23:39:02.000000000 +0900
++++ ./17_day/harib14a/bootpack.c	2006-03-23 23:45:02.000000000 +0900
+@@ -76,7 +76,7 @@
+ 		task_b[i]->tss.fs = 1 * 8;
+ 		task_b[i]->tss.gs = 1 * 8;
+ 		*((int *) (task_b[i]->tss.esp + 4)) = (int) sht_win_b[i];
+-		task_run(task_b[i], 2, i + 1);
++		/* task_run(task_b[i], 2, i + 1); */
+ 	}
+ 
+ 	/* sht_win */
+./16_day/harib13e のみに存在: haribote.img
+diff -u ./16_day/harib13e/mtask.c ./17_day/harib14a/mtask.c
+--- ./16_day/harib13e/mtask.c	2005-06-18 18:38:08.000000000 +0900
++++ ./17_day/harib14a/mtask.c	2005-06-19 04:02:58.000000000 +0900
+@@ -65,11 +65,19 @@
+ 	return;
+ }
+ 
++void task_idle(void)
++{
++	for (;;) {
++		io_hlt();
++	}
++}
++
+ struct TASK *task_init(struct MEMMAN *memman)
+ {
+ 	int i;
+-	struct TASK *task;
++	struct TASK *task, *idle;
+ 	struct SEGMENT_DESCRIPTOR *gdt = (struct SEGMENT_DESCRIPTOR *) ADR_GDT;
++
+ 	taskctl = (struct TASKCTL *) memman_alloc_4k(memman, sizeof (struct TASKCTL));
+ 	for (i = 0; i < MAX_TASKS; i++) {
+ 		taskctl->tasks0[i].flags = 0;
+@@ -80,6 +88,7 @@
+ 		taskctl->level[i].running = 0;
+ 		taskctl->level[i].now = 0;
+ 	}
++
+ 	task = task_alloc();
+ 	task->flags = 2;	/* 動作中マーク */
+ 	task->priority = 2; /* 0.02秒 */
+@@ -89,6 +98,18 @@
+ 	load_tr(task->sel);
+ 	task_timer = timer_alloc();
+ 	timer_settime(task_timer, task->priority);
++
++	idle = task_alloc();
++	idle->tss.esp = memman_alloc_4k(memman, 64 * 1024) + 64 * 1024;
++	idle->tss.eip = (int) &task_idle;
++	idle->tss.es = 1 * 8;
++	idle->tss.cs = 2 * 8;
++	idle->tss.ss = 1 * 8;
++	idle->tss.ds = 1 * 8;
++	idle->tss.fs = 1 * 8;
++	idle->tss.gs = 1 * 8;
++	task_run(idle, MAX_TASKLEVELS - 1, 1);
++
+ 	return task;
+ }
+ 

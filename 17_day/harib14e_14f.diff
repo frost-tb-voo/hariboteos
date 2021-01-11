@@ -1,0 +1,25 @@
+diff -u ./17_day/harib14e/bootpack.c ./17_day/harib14f/bootpack.c
+--- ./17_day/harib14e/bootpack.c	2006-03-24 22:12:36.000000000 +0900
++++ ./17_day/harib14f/bootpack.c	2006-03-24 22:35:02.000000000 +0900
+@@ -44,7 +44,7 @@
+ 		0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+ 		0,   0,   0,   '_', 0,   0,   0,   0,   0,   0,   0,   0,   0,   '|', 0,   0
+ 	};
+-	int key_to = 0, key_shift = 0;
++	int key_to = 0, key_shift = 0, key_leds = (binfo->leds >> 4) & 7;
+ 
+ 	init_gdtidt();
+ 	init_pic();
+@@ -144,6 +144,12 @@
+ 				} else {
+ 					s[0] = 0;
+ 				}
++				if ('A' <= s[0] && s[0] <= 'Z') {	/* 入力文字がアルファベット */
++					if (((key_leds & 4) == 0 && key_shift == 0) ||
++							((key_leds & 4) != 0 && key_shift != 0)) {
++						s[0] += 0x20;	/* 大文字を小文字に変換 */
++					}
++				}
+ 				if (s[0] != 0) { /* 通常文字 */
+ 					if (key_to == 0) {	/* タスクAへ */
+ 						if (cursor_x < 128) {
