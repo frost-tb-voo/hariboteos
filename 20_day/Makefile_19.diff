@@ -1,0 +1,432 @@
+--- ../19_day/harib16e/Makefile	2021-01-12 03:57:41.103632630 +0900
++++ ./harib17f/Makefile	2006-04-11 01:06:48.000000000 +0900
+@@ -1,11 +1,9 @@
+-TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
+-
+ OBJS_BOOTPACK = bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj \
+ 		int.obj fifo.obj keyboard.obj mouse.obj memory.obj sheet.obj timer.obj \
+ 		mtask.obj window.obj console.obj file.obj
+ 
+-TOOLPATH = ${TOLSET}/z_tools/
+-INCPATH  = ${TOLSET}/z_tools/haribote/
++TOOLPATH = ../z_tools/
++INCPATH  = ../z_tools/haribote/
+ 
+ MAKE     = $(TOOLPATH)make.exe -r
+ NASK     = $(TOOLPATH)nask.exe
+@@ -41,7 +39,6 @@
+ 	$(BIN2OBJ) hankaku.bin hankaku.obj _hankaku
+ 
+ bootpack.bim : $(OBJS_BOOTPACK) Makefile
+-	XCOPY ${TOLSET}\z_tools\haribote ..\z_tools\haribote /I /Y 
+ 	$(OBJ2BIM) @$(RULEFILE) out:bootpack.bim stack:3136k map:bootpack.map \
+ 		$(OBJS_BOOTPACK)
+ # 3MB+64KB=3136KB
+@@ -49,19 +46,19 @@
+ bootpack.hrb : bootpack.bim Makefile
+ 	$(BIM2HRB) bootpack.bim bootpack.hrb 0
+ 
+-hlt.hrb : hlt.nas Makefile
+-	$(NASK) hlt.nas hlt.hrb hlt.lst
++hello.hrb : hello.nas Makefile
++	$(NASK) hello.nas hello.hrb hello.lst
+ 
+ haribote.sys : asmhead.bin bootpack.hrb Makefile
+ 	copy /B asmhead.bin+bootpack.hrb haribote.sys
+ 
+-haribote.img : ipl10.bin haribote.sys hlt.hrb Makefile
+-	$(EDIMG)   imgin:${TOLSET}/z_tools/fdimg0at.tek \
++haribote.img : ipl10.bin haribote.sys hello.hrb Makefile
++	$(EDIMG)   imgin:../z_tools/fdimg0at.tek \
+ 		wbinimg src:ipl10.bin len:512 from:0 to:0 \
+ 		copy from:haribote.sys to:@: \
+ 		copy from:ipl10.nas to:@: \
+-		copy from:keyboard.c to:@: \
+-		copy from:hlt.hrb to:@: \
++		copy from:make.bat to:@: \
++		copy from:hello.hrb to:@: \
+ 		imgout:haribote.img
+ 
+ # 一般規則
+@@ -82,8 +79,8 @@
+ 
+ run :
+ 	$(MAKE) img
+-	$(COPY) haribote.img ${TOLSET}\z_tools\qemu\fdimage0.bin
+-	$(MAKE) -C ${TOLSET}/z_tools/qemu
++	$(COPY) haribote.img ..\z_tools\qemu\fdimage0.bin
++	$(MAKE) -C ../z_tools/qemu
+ 
+ install :
+ 	$(MAKE) img
+--- ../19_day/harib16e/Makefile	2021-01-12 03:57:41.103632630 +0900
++++ ./harib17c/Makefile	2006-04-11 00:58:52.000000000 +0900
+@@ -1,11 +1,9 @@
+-TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
+-
+ OBJS_BOOTPACK = bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj \
+ 		int.obj fifo.obj keyboard.obj mouse.obj memory.obj sheet.obj timer.obj \
+ 		mtask.obj window.obj console.obj file.obj
+ 
+-TOOLPATH = ${TOLSET}/z_tools/
+-INCPATH  = ${TOLSET}/z_tools/haribote/
++TOOLPATH = ../z_tools/
++INCPATH  = ../z_tools/haribote/
+ 
+ MAKE     = $(TOOLPATH)make.exe -r
+ NASK     = $(TOOLPATH)nask.exe
+@@ -41,7 +39,6 @@
+ 	$(BIN2OBJ) hankaku.bin hankaku.obj _hankaku
+ 
+ bootpack.bim : $(OBJS_BOOTPACK) Makefile
+-	XCOPY ${TOLSET}\z_tools\haribote ..\z_tools\haribote /I /Y 
+ 	$(OBJ2BIM) @$(RULEFILE) out:bootpack.bim stack:3136k map:bootpack.map \
+ 		$(OBJS_BOOTPACK)
+ # 3MB+64KB=3136KB
+@@ -56,11 +53,11 @@
+ 	copy /B asmhead.bin+bootpack.hrb haribote.sys
+ 
+ haribote.img : ipl10.bin haribote.sys hlt.hrb Makefile
+-	$(EDIMG)   imgin:${TOLSET}/z_tools/fdimg0at.tek \
++	$(EDIMG)   imgin:../z_tools/fdimg0at.tek \
+ 		wbinimg src:ipl10.bin len:512 from:0 to:0 \
+ 		copy from:haribote.sys to:@: \
+ 		copy from:ipl10.nas to:@: \
+-		copy from:keyboard.c to:@: \
++		copy from:make.bat to:@: \
+ 		copy from:hlt.hrb to:@: \
+ 		imgout:haribote.img
+ 
+@@ -82,8 +79,8 @@
+ 
+ run :
+ 	$(MAKE) img
+-	$(COPY) haribote.img ${TOLSET}\z_tools\qemu\fdimage0.bin
+-	$(MAKE) -C ${TOLSET}/z_tools/qemu
++	$(COPY) haribote.img ..\z_tools\qemu\fdimage0.bin
++	$(MAKE) -C ../z_tools/qemu
+ 
+ install :
+ 	$(MAKE) img
+--- ../19_day/harib16e/Makefile	2021-01-12 03:57:41.103632630 +0900
++++ ./harib17d/Makefile	2006-04-11 00:58:52.000000000 +0900
+@@ -1,11 +1,9 @@
+-TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
+-
+ OBJS_BOOTPACK = bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj \
+ 		int.obj fifo.obj keyboard.obj mouse.obj memory.obj sheet.obj timer.obj \
+ 		mtask.obj window.obj console.obj file.obj
+ 
+-TOOLPATH = ${TOLSET}/z_tools/
+-INCPATH  = ${TOLSET}/z_tools/haribote/
++TOOLPATH = ../z_tools/
++INCPATH  = ../z_tools/haribote/
+ 
+ MAKE     = $(TOOLPATH)make.exe -r
+ NASK     = $(TOOLPATH)nask.exe
+@@ -41,7 +39,6 @@
+ 	$(BIN2OBJ) hankaku.bin hankaku.obj _hankaku
+ 
+ bootpack.bim : $(OBJS_BOOTPACK) Makefile
+-	XCOPY ${TOLSET}\z_tools\haribote ..\z_tools\haribote /I /Y 
+ 	$(OBJ2BIM) @$(RULEFILE) out:bootpack.bim stack:3136k map:bootpack.map \
+ 		$(OBJS_BOOTPACK)
+ # 3MB+64KB=3136KB
+@@ -56,11 +53,11 @@
+ 	copy /B asmhead.bin+bootpack.hrb haribote.sys
+ 
+ haribote.img : ipl10.bin haribote.sys hlt.hrb Makefile
+-	$(EDIMG)   imgin:${TOLSET}/z_tools/fdimg0at.tek \
++	$(EDIMG)   imgin:../z_tools/fdimg0at.tek \
+ 		wbinimg src:ipl10.bin len:512 from:0 to:0 \
+ 		copy from:haribote.sys to:@: \
+ 		copy from:ipl10.nas to:@: \
+-		copy from:keyboard.c to:@: \
++		copy from:make.bat to:@: \
+ 		copy from:hlt.hrb to:@: \
+ 		imgout:haribote.img
+ 
+@@ -82,8 +79,8 @@
+ 
+ run :
+ 	$(MAKE) img
+-	$(COPY) haribote.img ${TOLSET}\z_tools\qemu\fdimage0.bin
+-	$(MAKE) -C ${TOLSET}/z_tools/qemu
++	$(COPY) haribote.img ..\z_tools\qemu\fdimage0.bin
++	$(MAKE) -C ../z_tools/qemu
+ 
+ install :
+ 	$(MAKE) img
+--- ../19_day/harib16e/Makefile	2021-01-12 03:57:41.103632630 +0900
++++ ./harib17a/Makefile	2006-04-11 00:58:52.000000000 +0900
+@@ -1,11 +1,9 @@
+-TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
+-
+ OBJS_BOOTPACK = bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj \
+ 		int.obj fifo.obj keyboard.obj mouse.obj memory.obj sheet.obj timer.obj \
+ 		mtask.obj window.obj console.obj file.obj
+ 
+-TOOLPATH = ${TOLSET}/z_tools/
+-INCPATH  = ${TOLSET}/z_tools/haribote/
++TOOLPATH = ../z_tools/
++INCPATH  = ../z_tools/haribote/
+ 
+ MAKE     = $(TOOLPATH)make.exe -r
+ NASK     = $(TOOLPATH)nask.exe
+@@ -41,7 +39,6 @@
+ 	$(BIN2OBJ) hankaku.bin hankaku.obj _hankaku
+ 
+ bootpack.bim : $(OBJS_BOOTPACK) Makefile
+-	XCOPY ${TOLSET}\z_tools\haribote ..\z_tools\haribote /I /Y 
+ 	$(OBJ2BIM) @$(RULEFILE) out:bootpack.bim stack:3136k map:bootpack.map \
+ 		$(OBJS_BOOTPACK)
+ # 3MB+64KB=3136KB
+@@ -56,11 +53,11 @@
+ 	copy /B asmhead.bin+bootpack.hrb haribote.sys
+ 
+ haribote.img : ipl10.bin haribote.sys hlt.hrb Makefile
+-	$(EDIMG)   imgin:${TOLSET}/z_tools/fdimg0at.tek \
++	$(EDIMG)   imgin:../z_tools/fdimg0at.tek \
+ 		wbinimg src:ipl10.bin len:512 from:0 to:0 \
+ 		copy from:haribote.sys to:@: \
+ 		copy from:ipl10.nas to:@: \
+-		copy from:keyboard.c to:@: \
++		copy from:make.bat to:@: \
+ 		copy from:hlt.hrb to:@: \
+ 		imgout:haribote.img
+ 
+@@ -82,8 +79,8 @@
+ 
+ run :
+ 	$(MAKE) img
+-	$(COPY) haribote.img ${TOLSET}\z_tools\qemu\fdimage0.bin
+-	$(MAKE) -C ${TOLSET}/z_tools/qemu
++	$(COPY) haribote.img ..\z_tools\qemu\fdimage0.bin
++	$(MAKE) -C ../z_tools/qemu
+ 
+ install :
+ 	$(MAKE) img
+--- ../19_day/harib16e/Makefile	2021-01-12 03:57:41.103632630 +0900
++++ ./harib17e/Makefile	2006-04-11 00:58:52.000000000 +0900
+@@ -1,11 +1,9 @@
+-TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
+-
+ OBJS_BOOTPACK = bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj \
+ 		int.obj fifo.obj keyboard.obj mouse.obj memory.obj sheet.obj timer.obj \
+ 		mtask.obj window.obj console.obj file.obj
+ 
+-TOOLPATH = ${TOLSET}/z_tools/
+-INCPATH  = ${TOLSET}/z_tools/haribote/
++TOOLPATH = ../z_tools/
++INCPATH  = ../z_tools/haribote/
+ 
+ MAKE     = $(TOOLPATH)make.exe -r
+ NASK     = $(TOOLPATH)nask.exe
+@@ -41,7 +39,6 @@
+ 	$(BIN2OBJ) hankaku.bin hankaku.obj _hankaku
+ 
+ bootpack.bim : $(OBJS_BOOTPACK) Makefile
+-	XCOPY ${TOLSET}\z_tools\haribote ..\z_tools\haribote /I /Y 
+ 	$(OBJ2BIM) @$(RULEFILE) out:bootpack.bim stack:3136k map:bootpack.map \
+ 		$(OBJS_BOOTPACK)
+ # 3MB+64KB=3136KB
+@@ -56,11 +53,11 @@
+ 	copy /B asmhead.bin+bootpack.hrb haribote.sys
+ 
+ haribote.img : ipl10.bin haribote.sys hlt.hrb Makefile
+-	$(EDIMG)   imgin:${TOLSET}/z_tools/fdimg0at.tek \
++	$(EDIMG)   imgin:../z_tools/fdimg0at.tek \
+ 		wbinimg src:ipl10.bin len:512 from:0 to:0 \
+ 		copy from:haribote.sys to:@: \
+ 		copy from:ipl10.nas to:@: \
+-		copy from:keyboard.c to:@: \
++		copy from:make.bat to:@: \
+ 		copy from:hlt.hrb to:@: \
+ 		imgout:haribote.img
+ 
+@@ -82,8 +79,8 @@
+ 
+ run :
+ 	$(MAKE) img
+-	$(COPY) haribote.img ${TOLSET}\z_tools\qemu\fdimage0.bin
+-	$(MAKE) -C ${TOLSET}/z_tools/qemu
++	$(COPY) haribote.img ..\z_tools\qemu\fdimage0.bin
++	$(MAKE) -C ../z_tools/qemu
+ 
+ install :
+ 	$(MAKE) img
+--- ../19_day/harib16e/Makefile	2021-01-12 03:57:41.103632630 +0900
++++ ./harib17h/Makefile	2005-10-06 18:40:00.000000000 +0900
+@@ -1,11 +1,9 @@
+-TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
+-
+ OBJS_BOOTPACK = bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj \
+ 		int.obj fifo.obj keyboard.obj mouse.obj memory.obj sheet.obj timer.obj \
+ 		mtask.obj window.obj console.obj file.obj
+ 
+-TOOLPATH = ${TOLSET}/z_tools/
+-INCPATH  = ${TOLSET}/z_tools/haribote/
++TOOLPATH = ../z_tools/
++INCPATH  = ../z_tools/haribote/
+ 
+ MAKE     = $(TOOLPATH)make.exe -r
+ NASK     = $(TOOLPATH)nask.exe
+@@ -41,7 +39,6 @@
+ 	$(BIN2OBJ) hankaku.bin hankaku.obj _hankaku
+ 
+ bootpack.bim : $(OBJS_BOOTPACK) Makefile
+-	XCOPY ${TOLSET}\z_tools\haribote ..\z_tools\haribote /I /Y 
+ 	$(OBJ2BIM) @$(RULEFILE) out:bootpack.bim stack:3136k map:bootpack.map \
+ 		$(OBJS_BOOTPACK)
+ # 3MB+64KB=3136KB
+@@ -49,19 +46,23 @@
+ bootpack.hrb : bootpack.bim Makefile
+ 	$(BIM2HRB) bootpack.bim bootpack.hrb 0
+ 
+-hlt.hrb : hlt.nas Makefile
+-	$(NASK) hlt.nas hlt.hrb hlt.lst
++hello.hrb : hello.nas Makefile
++	$(NASK) hello.nas hello.hrb hello.lst
++
++hello2.hrb : hello2.nas Makefile
++	$(NASK) hello2.nas hello2.hrb hello2.lst
+ 
+ haribote.sys : asmhead.bin bootpack.hrb Makefile
+ 	copy /B asmhead.bin+bootpack.hrb haribote.sys
+ 
+-haribote.img : ipl10.bin haribote.sys hlt.hrb Makefile
+-	$(EDIMG)   imgin:${TOLSET}/z_tools/fdimg0at.tek \
++haribote.img : ipl10.bin haribote.sys hello.hrb hello2.hrb Makefile
++	$(EDIMG)   imgin:../z_tools/fdimg0at.tek \
+ 		wbinimg src:ipl10.bin len:512 from:0 to:0 \
+ 		copy from:haribote.sys to:@: \
+ 		copy from:ipl10.nas to:@: \
+-		copy from:keyboard.c to:@: \
+-		copy from:hlt.hrb to:@: \
++		copy from:make.bat to:@: \
++		copy from:hello.hrb to:@: \
++		copy from:hello2.hrb to:@: \
+ 		imgout:haribote.img
+ 
+ # 一般規則
+@@ -82,8 +83,8 @@
+ 
+ run :
+ 	$(MAKE) img
+-	$(COPY) haribote.img ${TOLSET}\z_tools\qemu\fdimage0.bin
+-	$(MAKE) -C ${TOLSET}/z_tools/qemu
++	$(COPY) haribote.img ..\z_tools\qemu\fdimage0.bin
++	$(MAKE) -C ../z_tools/qemu
+ 
+ install :
+ 	$(MAKE) img
+--- ../19_day/harib16e/Makefile	2021-01-12 03:57:41.103632630 +0900
++++ ./harib17g/Makefile	2006-04-11 01:06:48.000000000 +0900
+@@ -1,11 +1,9 @@
+-TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
+-
+ OBJS_BOOTPACK = bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj \
+ 		int.obj fifo.obj keyboard.obj mouse.obj memory.obj sheet.obj timer.obj \
+ 		mtask.obj window.obj console.obj file.obj
+ 
+-TOOLPATH = ${TOLSET}/z_tools/
+-INCPATH  = ${TOLSET}/z_tools/haribote/
++TOOLPATH = ../z_tools/
++INCPATH  = ../z_tools/haribote/
+ 
+ MAKE     = $(TOOLPATH)make.exe -r
+ NASK     = $(TOOLPATH)nask.exe
+@@ -41,7 +39,6 @@
+ 	$(BIN2OBJ) hankaku.bin hankaku.obj _hankaku
+ 
+ bootpack.bim : $(OBJS_BOOTPACK) Makefile
+-	XCOPY ${TOLSET}\z_tools\haribote ..\z_tools\haribote /I /Y 
+ 	$(OBJ2BIM) @$(RULEFILE) out:bootpack.bim stack:3136k map:bootpack.map \
+ 		$(OBJS_BOOTPACK)
+ # 3MB+64KB=3136KB
+@@ -49,19 +46,19 @@
+ bootpack.hrb : bootpack.bim Makefile
+ 	$(BIM2HRB) bootpack.bim bootpack.hrb 0
+ 
+-hlt.hrb : hlt.nas Makefile
+-	$(NASK) hlt.nas hlt.hrb hlt.lst
++hello.hrb : hello.nas Makefile
++	$(NASK) hello.nas hello.hrb hello.lst
+ 
+ haribote.sys : asmhead.bin bootpack.hrb Makefile
+ 	copy /B asmhead.bin+bootpack.hrb haribote.sys
+ 
+-haribote.img : ipl10.bin haribote.sys hlt.hrb Makefile
+-	$(EDIMG)   imgin:${TOLSET}/z_tools/fdimg0at.tek \
++haribote.img : ipl10.bin haribote.sys hello.hrb Makefile
++	$(EDIMG)   imgin:../z_tools/fdimg0at.tek \
+ 		wbinimg src:ipl10.bin len:512 from:0 to:0 \
+ 		copy from:haribote.sys to:@: \
+ 		copy from:ipl10.nas to:@: \
+-		copy from:keyboard.c to:@: \
+-		copy from:hlt.hrb to:@: \
++		copy from:make.bat to:@: \
++		copy from:hello.hrb to:@: \
+ 		imgout:haribote.img
+ 
+ # 一般規則
+@@ -82,8 +79,8 @@
+ 
+ run :
+ 	$(MAKE) img
+-	$(COPY) haribote.img ${TOLSET}\z_tools\qemu\fdimage0.bin
+-	$(MAKE) -C ${TOLSET}/z_tools/qemu
++	$(COPY) haribote.img ..\z_tools\qemu\fdimage0.bin
++	$(MAKE) -C ../z_tools/qemu
+ 
+ install :
+ 	$(MAKE) img
+--- ../19_day/harib16e/Makefile	2021-01-12 03:57:41.103632630 +0900
++++ ./harib17b/Makefile	2006-04-11 00:58:52.000000000 +0900
+@@ -1,11 +1,9 @@
+-TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
+-
+ OBJS_BOOTPACK = bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj \
+ 		int.obj fifo.obj keyboard.obj mouse.obj memory.obj sheet.obj timer.obj \
+ 		mtask.obj window.obj console.obj file.obj
+ 
+-TOOLPATH = ${TOLSET}/z_tools/
+-INCPATH  = ${TOLSET}/z_tools/haribote/
++TOOLPATH = ../z_tools/
++INCPATH  = ../z_tools/haribote/
+ 
+ MAKE     = $(TOOLPATH)make.exe -r
+ NASK     = $(TOOLPATH)nask.exe
+@@ -41,7 +39,6 @@
+ 	$(BIN2OBJ) hankaku.bin hankaku.obj _hankaku
+ 
+ bootpack.bim : $(OBJS_BOOTPACK) Makefile
+-	XCOPY ${TOLSET}\z_tools\haribote ..\z_tools\haribote /I /Y 
+ 	$(OBJ2BIM) @$(RULEFILE) out:bootpack.bim stack:3136k map:bootpack.map \
+ 		$(OBJS_BOOTPACK)
+ # 3MB+64KB=3136KB
+@@ -56,11 +53,11 @@
+ 	copy /B asmhead.bin+bootpack.hrb haribote.sys
+ 
+ haribote.img : ipl10.bin haribote.sys hlt.hrb Makefile
+-	$(EDIMG)   imgin:${TOLSET}/z_tools/fdimg0at.tek \
++	$(EDIMG)   imgin:../z_tools/fdimg0at.tek \
+ 		wbinimg src:ipl10.bin len:512 from:0 to:0 \
+ 		copy from:haribote.sys to:@: \
+ 		copy from:ipl10.nas to:@: \
+-		copy from:keyboard.c to:@: \
++		copy from:make.bat to:@: \
+ 		copy from:hlt.hrb to:@: \
+ 		imgout:haribote.img
+ 
+@@ -82,8 +79,8 @@
+ 
+ run :
+ 	$(MAKE) img
+-	$(COPY) haribote.img ${TOLSET}\z_tools\qemu\fdimage0.bin
+-	$(MAKE) -C ${TOLSET}/z_tools/qemu
++	$(COPY) haribote.img ..\z_tools\qemu\fdimage0.bin
++	$(MAKE) -C ../z_tools/qemu
+ 
+ install :
+ 	$(MAKE) img
