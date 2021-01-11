@@ -1,0 +1,12 @@
+--- ../14_day/harib11i/Makefile	2020-11-16 22:32:30.224662391 +0900
++++ ./harib12g/Makefile	2020-11-16 22:46:38.533528656 +0900
+@@ -1,7 +1,8 @@
+ TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
+ 
+ OBJS_BOOTPACK = bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj \
+-		int.obj fifo.obj keyboard.obj mouse.obj memory.obj sheet.obj timer.obj
++		int.obj fifo.obj keyboard.obj mouse.obj memory.obj sheet.obj timer.obj \
++		mtask.obj
+ 
+ TOOLPATH = ${TOLSET}/z_tools/
+ INCPATH  = ${TOLSET}/z_tools/haribote/
