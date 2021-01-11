@@ -1,0 +1,550 @@
+diff -u ./21_day/harib18f/Makefile ./21_day/harib18g/Makefile
+--- ./21_day/harib18f/Makefile	2021-01-12 05:41:01.659620242 +0900
++++ ./21_day/harib18g/Makefile	2021-01-12 05:55:40.425602088 +0900
+@@ -71,7 +71,7 @@
+ 	$(BIM2HRB) hello3.bim hello3.hrb 0
+ 
+ crack1.bim : crack1.obj Makefile
+-	$(OBJ2BIM) @$(RULEFILE) out:crack1.bim map:crack1.map crack1.obj
++	$(OBJ2BIM) @$(RULEFILE) out:crack1.bim map:crack1.map crack1.obj a_nask.obj
+ 
+ crack1.hrb : crack1.bim Makefile
+ 	$(BIM2HRB) crack1.bim crack1.hrb 0
+diff -u ./21_day/harib18f/a.c ./21_day/harib18g/a.c
+--- ./21_day/harib18f/a.c	2005-10-08 12:51:28.000000000 +0900
++++ ./21_day/harib18g/a.c	2005-10-10 21:48:58.000000000 +0900
+@@ -1,7 +1,8 @@
+ void api_putchar(int c);
++void api_end(void);
+ 
+ void HariMain(void)
+ {
+ 	api_putchar('A');
+-	return;
++	api_end();
+ }
+diff -u ./21_day/harib18f/a_nask.nas ./21_day/harib18g/a_nask.nas
+--- ./21_day/harib18f/a_nask.nas	2005-10-08 12:53:52.000000000 +0900
++++ ./21_day/harib18g/a_nask.nas	2005-10-10 21:49:34.000000000 +0900
+@@ -1,9 +1,10 @@
+-[FORMAT "WCOFF"]				; オブジェクトファイルを作るモード	
+-[INSTRSET "i486p"]				; 486の命令まで使いたいという記述
+-[BITS 32]						; 32ビットモード用の機械語を作らせる
+-[FILE "a_nask.nas"]				; ソースファイル名情報
++[FORMAT "WCOFF"]
++[INSTRSET "i486p"]
++[BITS 32]
++[FILE "a_nask.nas"]
+ 
+ 		GLOBAL	_api_putchar
++		GLOBAL	_api_end
+ 
+ [SECTION .text]
+ 
+@@ -12,3 +13,7 @@
+ 		MOV		AL,[ESP+4]		; c
+ 		INT		0x40
+ 		RET
++
++_api_end:	; void api_end(void);
++		MOV		EDX,4
++		INT		0x40
+diff -u ./21_day/harib18f/bootpack.h ./21_day/harib18g/bootpack.h
+--- ./21_day/harib18f/bootpack.h	2007-05-24 00:10:18.000000000 +0900
++++ ./21_day/harib18g/bootpack.h	2007-05-24 23:28:28.000000000 +0900
+@@ -33,7 +33,7 @@
+ void farjmp(int eip, int cs);
+ void farcall(int eip, int cs);
+ void asm_hrb_api(void);
+-void start_app(int eip, int cs, int esp, int ds);
++void start_app(int eip, int cs, int esp, int ds, int *tss_esp0);
+ 
+ /* fifo.c */
+ struct FIFO32 {
+@@ -248,8 +248,8 @@
+ void cmd_dir(struct CONSOLE *cons);
+ void cmd_type(struct CONSOLE *cons, int *fat, char *cmdline);
+ int cmd_app(struct CONSOLE *cons, int *fat, char *cmdline);
+-void hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx, int eax);
+-int inthandler0d(int *esp);
++int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx, int eax);
++int *inthandler0d(int *esp);
+ 
+ /* file.c */
+ struct FILEINFO {
+diff -u ./21_day/harib18f/console.c ./21_day/harib18g/console.c
+--- ./21_day/harib18f/console.c	2007-05-24 00:16:30.000000000 +0900
++++ ./21_day/harib18g/console.c	2007-05-24 23:33:14.000000000 +0900
+@@ -258,6 +258,7 @@
+ 	struct FILEINFO *finfo;
+ 	struct SEGMENT_DESCRIPTOR *gdt = (struct SEGMENT_DESCRIPTOR *) ADR_GDT;
+ 	char name[18], *p, *q;
++	struct TASK *task = task_now();
+ 	int i;
+ 
+ 	/* コマンドラインからファイル名を生成 */
+@@ -287,8 +288,8 @@
+ 		q = (char *) memman_alloc_4k(memman, 64 * 1024);
+ 		*((int *) 0xfe8) = (int) p;
+ 		file_loadfile(finfo->clustno, finfo->size, p, fat, (char *) (ADR_DISKIMG + 0x003e00));
+-		set_segmdesc(gdt + 1003, finfo->size - 1, (int) p, AR_CODE32_ER);
+-		set_segmdesc(gdt + 1004, 64 * 1024 - 1,   (int) q, AR_DATA32_RW);
++		set_segmdesc(gdt + 1003, finfo->size - 1, (int) p, AR_CODE32_ER + 0x60);
++		set_segmdesc(gdt + 1004, 64 * 1024 - 1,   (int) q, AR_DATA32_RW + 0x60);
+ 		if (finfo->size >= 8 && strncmp(p + 4, "Hari", 4) == 0) {
+ 			p[0] = 0xe8;
+ 			p[1] = 0x16;
+@@ -297,7 +298,7 @@
+ 			p[4] = 0x00;
+ 			p[5] = 0xcb;
+ 		}
+-		start_app(0, 1003 * 8, 64 * 1024, 1004 * 8);
++		start_app(0, 1003 * 8, 64 * 1024, 1004 * 8, &(task->tss.esp0));
+ 		memman_free_4k(memman, (int) p, finfo->size);
+ 		memman_free_4k(memman, (int) q, 64 * 1024);
+ 		cons_newline(cons);
+@@ -307,9 +308,10 @@
+ 	return 0;
+ }
+ 
+-void hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx, int eax)
++int *hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx, int eax)
+ {
+ 	int cs_base = *((int *) 0xfe8);
++	struct TASK *task = task_now();
+ 	struct CONSOLE *cons = (struct CONSOLE *) *((int *) 0x0fec);
+ 	if (edx == 1) {
+ 		cons_putchar(cons, eax & 0xff, 1);
+@@ -317,14 +319,16 @@
+ 		cons_putstr0(cons, (char *) ebx + cs_base);
+ 	} else if (edx == 3) {
+ 		cons_putstr1(cons, (char *) ebx + cs_base, ecx);
++	} else if (edx == 4) {
++		return &(task->tss.esp0);
+ 	}
+-	return;
++	return 0;
+ }
+ 
+-int inthandler0d(int *esp)
++int *inthandler0d(int *esp)
+ {
+ 	struct CONSOLE *cons = (struct CONSOLE *) *((int *) 0x0fec);
++	struct TASK *task = task_now();
+ 	cons_putstr0(cons, "\nINT 0D :\n General Protected Exception.\n");
+-	return 1; /* 異常終了させる */
++	return &(task->tss.esp0);	/* 異常終了させる */
+ }
+-
+diff -u ./21_day/harib18f/crack1.c ./21_day/harib18g/crack1.c
+--- ./21_day/harib18f/crack1.c	2005-10-08 19:05:36.000000000 +0900
++++ ./21_day/harib18g/crack1.c	2005-10-10 21:50:32.000000000 +0900
+@@ -1,5 +1,7 @@
++void api_end(void);
++
+ void HariMain(void)
+ {
+ 	*((char *) 0x00102600) = 0;
+-	return;
++	api_end();
+ }
+diff -u ./21_day/harib18f/crack2.nas ./21_day/harib18g/crack2.nas
+--- ./21_day/harib18f/crack2.nas	2005-10-10 21:05:30.000000000 +0900
++++ ./21_day/harib18g/crack2.nas	2005-10-10 21:51:28.000000000 +0900
+@@ -3,4 +3,5 @@
+ 		MOV		EAX,1*8			; OS用のセグメント番号
+ 		MOV		DS,AX			; これをDSにいれちゃう
+ 		MOV		BYTE [0x102600],0
+-		RETF
++		MOV		EDX,4
++		INT		0x40
+diff -u ./21_day/harib18f/dsctbl.c ./21_day/harib18g/dsctbl.c
+--- ./21_day/harib18f/dsctbl.c	2007-05-24 00:26:22.000000000 +0900
++++ ./21_day/harib18g/dsctbl.c	2007-05-24 23:20:06.000000000 +0900
+@@ -28,7 +28,7 @@
+ 	set_gatedesc(idt + 0x21, (int) asm_inthandler21, 2 * 8, AR_INTGATE32);
+ 	set_gatedesc(idt + 0x27, (int) asm_inthandler27, 2 * 8, AR_INTGATE32);
+ 	set_gatedesc(idt + 0x2c, (int) asm_inthandler2c, 2 * 8, AR_INTGATE32);
+-	set_gatedesc(idt + 0x40, (int) asm_hrb_api,      2 * 8, AR_INTGATE32);
++	set_gatedesc(idt + 0x40, (int) asm_hrb_api,      2 * 8, AR_INTGATE32 + 0x60);
+ 
+ 	return;
+ }
+バイナリーファイル ./21_day/harib18f/haribote.img と./21_day/harib18g/haribote.img は異なります
+diff -u ./21_day/harib18f/hello.nas ./21_day/harib18g/hello.nas
+--- ./21_day/harib18f/hello.nas	2005-10-06 18:36:58.000000000 +0900
++++ ./21_day/harib18g/hello.nas	2005-10-10 21:27:00.000000000 +0900
+@@ -10,6 +10,7 @@
+ 		ADD		ECX,1
+ 		JMP		putloop
+ fin:
+-		RETF
++		MOV		EDX,4
++		INT		0x40
+ msg:
+ 		DB	"hello",0
+diff -u ./21_day/harib18f/hello2.nas ./21_day/harib18g/hello2.nas
+--- ./21_day/harib18f/hello2.nas	2005-10-06 18:33:32.000000000 +0900
++++ ./21_day/harib18g/hello2.nas	2005-10-10 21:27:22.000000000 +0900
+@@ -3,6 +3,7 @@
+ 		MOV		EDX,2
+ 		MOV		EBX,msg
+ 		INT		0x40
+-		RETF
++		MOV		EDX,4
++		INT		0x40
+ msg:
+ 		DB	"hello",0
+diff -u ./21_day/harib18f/hello3.c ./21_day/harib18g/hello3.c
+--- ./21_day/harib18f/hello3.c	2005-10-08 15:01:12.000000000 +0900
++++ ./21_day/harib18g/hello3.c	2005-10-10 21:50:02.000000000 +0900
+@@ -1,4 +1,5 @@
+ void api_putchar(int c);
++void api_end(void);
+ 
+ void HariMain(void)
+ {
+@@ -7,5 +8,5 @@
+ 	api_putchar('l');
+ 	api_putchar('l');
+ 	api_putchar('o');
+-	return;
++	api_end();
+ }
+diff -u ./21_day/harib18f/naskfunc.nas ./21_day/harib18g/naskfunc.nas
+--- ./21_day/harib18f/naskfunc.nas	2007-05-24 00:07:04.000000000 +0900
++++ ./21_day/harib18g/naskfunc.nas	2007-05-24 23:39:14.000000000 +0900
+@@ -118,38 +118,13 @@
+ 		PUSH	ES
+ 		PUSH	DS
+ 		PUSHAD
+-		MOV		AX,SS
+-		CMP		AX,1*8
+-		JNE		.from_app
+-;	OSが動いているときに割り込まれたのでほぼ今までどおり
+ 		MOV		EAX,ESP
+-		PUSH	SS				; 割り込まれたときのSSを保存
+-		PUSH	EAX				; 割り込まれたときのESPを保存
++		PUSH	EAX
+ 		MOV		AX,SS
+ 		MOV		DS,AX
+ 		MOV		ES,AX
+ 		CALL	_inthandler20
+-		ADD		ESP,8
+-		POPAD
+-		POP		DS
+-		POP		ES
+-		IRETD
+-.from_app:
+-;	アプリが動いているときに割り込まれた
+-		MOV		EAX,1*8
+-		MOV		DS,AX			; とりあえずDSだけOS用にする
+-		MOV		ECX,[0xfe4]		; OSのESP
+-		ADD		ECX,-8
+-		MOV		[ECX+4],SS		; 割り込まれたときのSSを保存
+-		MOV		[ECX  ],ESP		; 割り込まれたときのESPを保存
+-		MOV		SS,AX
+-		MOV		ES,AX
+-		MOV		ESP,ECX
+-		CALL	_inthandler20
+-		POP		ECX
+ 		POP		EAX
+-		MOV		SS,AX			; SSをアプリ用に戻す
+-		MOV		ESP,ECX			; ESPもアプリ用に戻す
+ 		POPAD
+ 		POP		DS
+ 		POP		ES
+@@ -159,38 +134,13 @@
+ 		PUSH	ES
+ 		PUSH	DS
+ 		PUSHAD
+-		MOV		AX,SS
+-		CMP		AX,1*8
+-		JNE		.from_app
+-;	OSが動いているときに割り込まれたのでほぼ今までどおり
+ 		MOV		EAX,ESP
+-		PUSH	SS				; 割り込まれたときのSSを保存
+-		PUSH	EAX				; 割り込まれたときのESPを保存
++		PUSH	EAX
+ 		MOV		AX,SS
+ 		MOV		DS,AX
+ 		MOV		ES,AX
+ 		CALL	_inthandler21
+-		ADD		ESP,8
+-		POPAD
+-		POP		DS
+-		POP		ES
+-		IRETD
+-.from_app:
+-;	アプリが動いているときに割り込まれた
+-		MOV		EAX,1*8
+-		MOV		DS,AX			; とりあえずDSだけOS用にする
+-		MOV		ECX,[0xfe4]		; OSのESP
+-		ADD		ECX,-8
+-		MOV		[ECX+4],SS		; 割り込まれたときのSSを保存
+-		MOV		[ECX  ],ESP		; 割り込まれたときのESPを保存
+-		MOV		SS,AX
+-		MOV		ES,AX
+-		MOV		ESP,ECX
+-		CALL	_inthandler21
+-		POP		ECX
+ 		POP		EAX
+-		MOV		SS,AX			; SSをアプリ用に戻す
+-		MOV		ESP,ECX			; ESPもアプリ用に戻す
+ 		POPAD
+ 		POP		DS
+ 		POP		ES
+@@ -200,38 +150,13 @@
+ 		PUSH	ES
+ 		PUSH	DS
+ 		PUSHAD
+-		MOV		AX,SS
+-		CMP		AX,1*8
+-		JNE		.from_app
+-;	OSが動いているときに割り込まれたのでほぼ今までどおり
+ 		MOV		EAX,ESP
+-		PUSH	SS				; 割り込まれたときのSSを保存
+-		PUSH	EAX				; 割り込まれたときのESPを保存
++		PUSH	EAX
+ 		MOV		AX,SS
+ 		MOV		DS,AX
+ 		MOV		ES,AX
+ 		CALL	_inthandler27
+-		ADD		ESP,8
+-		POPAD
+-		POP		DS
+-		POP		ES
+-		IRETD
+-.from_app:
+-;	アプリが動いているときに割り込まれた
+-		MOV		EAX,1*8
+-		MOV		DS,AX			; とりあえずDSだけOS用にする
+-		MOV		ECX,[0xfe4]		; OSのESP
+-		ADD		ECX,-8
+-		MOV		[ECX+4],SS		; 割り込まれたときのSSを保存
+-		MOV		[ECX  ],ESP		; 割り込まれたときのESPを保存
+-		MOV		SS,AX
+-		MOV		ES,AX
+-		MOV		ESP,ECX
+-		CALL	_inthandler27
+-		POP		ECX
+ 		POP		EAX
+-		MOV		SS,AX			; SSをアプリ用に戻す
+-		MOV		ESP,ECX			; ESPもアプリ用に戻す
+ 		POPAD
+ 		POP		DS
+ 		POP		ES
+@@ -241,38 +166,13 @@
+ 		PUSH	ES
+ 		PUSH	DS
+ 		PUSHAD
+-		MOV		AX,SS
+-		CMP		AX,1*8
+-		JNE		.from_app
+-;	OSが動いているときに割り込まれたのでほぼ今までどおり
+ 		MOV		EAX,ESP
+-		PUSH	SS				; 割り込まれたときのSSを保存
+-		PUSH	EAX				; 割り込まれたときのESPを保存
++		PUSH	EAX
+ 		MOV		AX,SS
+ 		MOV		DS,AX
+ 		MOV		ES,AX
+ 		CALL	_inthandler2c
+-		ADD		ESP,8
+-		POPAD
+-		POP		DS
+-		POP		ES
+-		IRETD
+-.from_app:
+-;	アプリが動いているときに割り込まれた
+-		MOV		EAX,1*8
+-		MOV		DS,AX			; とりあえずDSだけOS用にする
+-		MOV		ECX,[0xfe4]		; OSのESP
+-		ADD		ECX,-8
+-		MOV		[ECX+4],SS		; 割り込まれたときのSSを保存
+-		MOV		[ECX  ],ESP		; 割り込まれたときのESPを保存
+-		MOV		SS,AX
+-		MOV		ES,AX
+-		MOV		ESP,ECX
+-		CALL	_inthandler2c
+-		POP		ECX
+ 		POP		EAX
+-		MOV		SS,AX			; SSをアプリ用に戻す
+-		MOV		ESP,ECX			; ESPもアプリ用に戻す
+ 		POPAD
+ 		POP		DS
+ 		POP		ES
+@@ -283,61 +183,20 @@
+ 		PUSH	ES
+ 		PUSH	DS
+ 		PUSHAD
+-		MOV		AX,SS
+-		CMP		AX,1*8
+-		JNE		.from_app
+-;	OSが動いているときに割り込まれたのでほぼ今までどおり
+ 		MOV		EAX,ESP
+-		PUSH	SS				; 割り込まれたときのSSを保存
+-		PUSH	EAX				; 割り込まれたときのESPを保存
++		PUSH	EAX
+ 		MOV		AX,SS
+ 		MOV		DS,AX
+ 		MOV		ES,AX
+ 		CALL	_inthandler0d
+-		ADD		ESP,8
+-		POPAD
+-		POP		DS
+-		POP		ES
+-		ADD		ESP,4			; INT 0x0d では、これが必要
+-		IRETD
+-.from_app:
+-;	アプリが動いているときに割り込まれた
+-		CLI
+-		MOV		EAX,1*8
+-		MOV		DS,AX			; とりあえずDSだけOS用にする
+-		MOV		ECX,[0xfe4]		; OSのESP
+-		ADD		ECX,-8
+-		MOV		[ECX+4],SS		; 割り込まれたときのSSを保存
+-		MOV		[ECX  ],ESP		; 割り込まれたときのESPを保存
+-		MOV		SS,AX
+-		MOV		ES,AX
+-		MOV		ESP,ECX
+-		STI
+-		CALL	_inthandler0d
+-		CLI
+-		CMP		EAX,0
+-		JNE		.kill
+-		POP		ECX
++		CMP		EAX,0		; ここだけ違う
++		JNE		end_app		; ここだけ違う
+ 		POP		EAX
+-		MOV		SS,AX			; SSをアプリ用に戻す
+-		MOV		ESP,ECX			; ESPもアプリ用に戻す
+ 		POPAD
+ 		POP		DS
+ 		POP		ES
+ 		ADD		ESP,4			; INT 0x0d では、これが必要
+ 		IRETD
+-.kill:
+-;	アプリを異常終了させることにした
+-		MOV		EAX,1*8			; OS用のDS/SS
+-		MOV		ES,AX
+-		MOV		SS,AX
+-		MOV		DS,AX
+-		MOV		FS,AX
+-		MOV		GS,AX
+-		MOV		ESP,[0xfe4]		; start_appのときのESPに無理やり戻す
+-		STI			; 切り替え完了なので割り込み可能に戻す
+-		POPAD	; 保存しておいたレジスタを回復
+-		RET
+ 
+ _memtest_sub:	; unsigned int memtest_sub(unsigned int start, unsigned int end)
+ 		PUSH	EDI						; （EBX, ESI, EDI も使いたいので）
+@@ -381,81 +240,47 @@
+ 		RET
+ 
+ _asm_hrb_api:
+-		; 都合のいいことに最初から割り込み禁止になっている
++		STI
+ 		PUSH	DS
+ 		PUSH	ES
+ 		PUSHAD		; 保存のためのPUSH
+-		MOV		EAX,1*8
+-		MOV		DS,AX			; とりあえずDSだけOS用にする
+-		MOV		ECX,[0xfe4]		; OSのESP
+-		ADD		ECX,-40
+-		MOV		[ECX+32],ESP	; アプリのESPを保存
+-		MOV		[ECX+36],SS		; アプリのSSを保存
+-
+-; PUSHADした値をシステムのスタックにコピーする
+-		MOV		EDX,[ESP   ]
+-		MOV		EBX,[ESP+ 4]
+-		MOV		[ECX   ],EDX	; hrb_apiに渡すためコピー
+-		MOV		[ECX+ 4],EBX	; hrb_apiに渡すためコピー
+-		MOV		EDX,[ESP+ 8]
+-		MOV		EBX,[ESP+12]
+-		MOV		[ECX+ 8],EDX	; hrb_apiに渡すためコピー
+-		MOV		[ECX+12],EBX	; hrb_apiに渡すためコピー
+-		MOV		EDX,[ESP+16]
+-		MOV		EBX,[ESP+20]
+-		MOV		[ECX+16],EDX	; hrb_apiに渡すためコピー
+-		MOV		[ECX+20],EBX	; hrb_apiに渡すためコピー
+-		MOV		EDX,[ESP+24]
+-		MOV		EBX,[ESP+28]
+-		MOV		[ECX+24],EDX	; hrb_apiに渡すためコピー
+-		MOV		[ECX+28],EBX	; hrb_apiに渡すためコピー
+-
+-		MOV		ES,AX			; 残りのセグメントレジスタもOS用にする
+-		MOV		SS,AX
+-		MOV		ESP,ECX
+-		STI			; やっと割り込み許可
+-
++		PUSHAD		; hrb_apiにわたすためのPUSH
++		MOV		AX,SS
++		MOV		DS,AX		; OS用のセグメントをDSとESにも入れる
++		MOV		ES,AX
+ 		CALL	_hrb_api
+-
+-		MOV		ECX,[ESP+32]	; アプリのESPを思い出す
+-		MOV		EAX,[ESP+36]	; アプリのSSを思い出す
+-		CLI
+-		MOV		SS,AX
+-		MOV		ESP,ECX
++		CMP		EAX,0		; EAXが0でなければアプリ終了処理
++		JNE		end_app
++		ADD		ESP,32
+ 		POPAD
+ 		POP		ES
+ 		POP		DS
+-		IRETD		; この命令が自動でSTIしてくれる
++		IRETD
++end_app:
++;	EAXはtss.esp0の番地
++		MOV		ESP,[EAX]
++		POPAD
++		RET					; cmd_appへ帰る
+ 
+-_start_app:		; void start_app(int eip, int cs, int esp, int ds);
++_start_app:		; void start_app(int eip, int cs, int esp, int ds, int *tss_esp0);
+ 		PUSHAD		; 32ビットレジスタを全部保存しておく
+ 		MOV		EAX,[ESP+36]	; アプリ用のEIP
+ 		MOV		ECX,[ESP+40]	; アプリ用のCS
+ 		MOV		EDX,[ESP+44]	; アプリ用のESP
+ 		MOV		EBX,[ESP+48]	; アプリ用のDS/SS
+-		MOV		[0xfe4],ESP		; OS用のESP
+-		CLI			; 切り替え中に割り込みが起きてほしくないので禁止
++		MOV		EBP,[ESP+52]	; tss.esp0の番地
++		MOV		[EBP  ],ESP		; OS用のESPを保存
++		MOV		[EBP+4],SS		; OS用のSSを保存
+ 		MOV		ES,BX
+-		MOV		SS,BX
+ 		MOV		DS,BX
+ 		MOV		FS,BX
+ 		MOV		GS,BX
+-		MOV		ESP,EDX
+-		STI			; 切り替え完了なので割り込み可能に戻す
+-		PUSH	ECX				; far-CALLのためにPUSH（cs）
+-		PUSH	EAX				; far-CALLのためにPUSH（eip）
+-		CALL	FAR [ESP]		; アプリを呼び出す
+-
+-;	アプリが終了するとここに帰ってくる
+-
+-		MOV		EAX,1*8			; OS用のDS/SS
+-		CLI			; また切り替えるので割り込み禁止
+-		MOV		ES,AX
+-		MOV		SS,AX
+-		MOV		DS,AX
+-		MOV		FS,AX
+-		MOV		GS,AX
+-		MOV		ESP,[0xfe4]
+-		STI			; 切り替え完了なので割り込み可能に戻す
+-		POPAD	; 保存しておいたレジスタを回復
+-		RET
++;	以下はRETFでアプリに行かせるためのスタック調整
++		OR		ECX,3			; アプリ用のセグメント番号に3をORする
++		OR		EBX,3			; アプリ用のセグメント番号に3をORする
++		PUSH	EBX				; アプリのSS
++		PUSH	EDX				; アプリのESP
++		PUSH	ECX				; アプリのCS
++		PUSH	EAX				; アプリのEIP
++		RETF
++;	アプリが終了してもここには来ない

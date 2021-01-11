@@ -1,0 +1,26 @@
+diff -u ./21_day/harib18e/Makefile ./21_day/harib18f/Makefile
+--- ./21_day/harib18e/Makefile	2021-01-12 05:31:58.449222086 +0900
++++ ./21_day/harib18f/Makefile	2021-01-12 05:41:01.659620242 +0900
+@@ -76,8 +76,11 @@
+ crack1.hrb : crack1.bim Makefile
+ 	$(BIM2HRB) crack1.bim crack1.hrb 0
+ 
++crack2.hrb : crack2.nas Makefile
++	$(NASK) crack2.nas crack2.hrb crack2.lst
++
+ haribote.img : ipl10.bin haribote.sys Makefile \
+-		hello.hrb hello2.hrb a.hrb hello3.hrb crack1.hrb
++		hello.hrb hello2.hrb a.hrb hello3.hrb crack1.hrb crack2.hrb
+ 	$(EDIMG)   imgin:${TOLSET}/z_tools/fdimg0at.tek \
+ 		wbinimg src:ipl10.bin len:512 from:0 to:0 \
+ 		copy from:haribote.sys to:@: \
+@@ -88,6 +91,7 @@
+ 		copy from:a.hrb to:@: \
+ 		copy from:hello3.hrb to:@: \
+ 		copy from:crack1.hrb to:@: \
++		copy from:crack2.hrb to:@: \
+ 		imgout:haribote.img
+ 
+ # 一般規則
+./21_day/harib18f のみに存在: crack2.nas
+バイナリーファイル ./21_day/harib18e/haribote.img と./21_day/harib18f/haribote.img は異なります

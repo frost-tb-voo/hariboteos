@@ -1,0 +1,131 @@
+diff -u ./21_day/harib18d/bootpack.h ./21_day/harib18e/bootpack.h
+--- ./21_day/harib18d/bootpack.h	2007-05-23 21:55:18.000000000 +0900
++++ ./21_day/harib18e/bootpack.h	2007-05-24 00:10:18.000000000 +0900
+@@ -24,6 +24,7 @@
+ int load_cr0(void);
+ void store_cr0(int cr0);
+ void load_tr(int tr);
++void asm_inthandler0d(void);
+ void asm_inthandler20(void);
+ void asm_inthandler21(void);
+ void asm_inthandler27(void);
+@@ -248,6 +249,7 @@
+ void cmd_type(struct CONSOLE *cons, int *fat, char *cmdline);
+ int cmd_app(struct CONSOLE *cons, int *fat, char *cmdline);
+ void hrb_api(int edi, int esi, int ebp, int esp, int ebx, int edx, int ecx, int eax);
++int inthandler0d(int *esp);
+ 
+ /* file.c */
+ struct FILEINFO {
+diff -u ./21_day/harib18d/console.c ./21_day/harib18e/console.c
+--- ./21_day/harib18d/console.c	2007-05-23 21:52:50.000000000 +0900
++++ ./21_day/harib18e/console.c	2007-05-24 00:16:30.000000000 +0900
+@@ -320,3 +320,11 @@
+ 	}
+ 	return;
+ }
++
++int inthandler0d(int *esp)
++{
++	struct CONSOLE *cons = (struct CONSOLE *) *((int *) 0x0fec);
++	cons_putstr0(cons, "\nINT 0D :\n General Protected Exception.\n");
++	return 1; /* 異常終了させる */
++}
++
+diff -u ./21_day/harib18d/dsctbl.c ./21_day/harib18e/dsctbl.c
+--- ./21_day/harib18d/dsctbl.c	2006-11-07 22:13:22.000000000 +0900
++++ ./21_day/harib18e/dsctbl.c	2007-05-24 00:26:22.000000000 +0900
+@@ -23,6 +23,7 @@
+ 	load_idtr(LIMIT_IDT, ADR_IDT);
+ 
+ 	/* IDTの設定 */
++	set_gatedesc(idt + 0x0d, (int) asm_inthandler0d, 2 * 8, AR_INTGATE32);
+ 	set_gatedesc(idt + 0x20, (int) asm_inthandler20, 2 * 8, AR_INTGATE32);
+ 	set_gatedesc(idt + 0x21, (int) asm_inthandler21, 2 * 8, AR_INTGATE32);
+ 	set_gatedesc(idt + 0x27, (int) asm_inthandler27, 2 * 8, AR_INTGATE32);
+バイナリーファイル ./21_day/harib18d/haribote.img と./21_day/harib18e/haribote.img は異なります
+diff -u ./21_day/harib18d/naskfunc.nas ./21_day/harib18e/naskfunc.nas
+--- ./21_day/harib18d/naskfunc.nas	2007-05-23 22:01:00.000000000 +0900
++++ ./21_day/harib18e/naskfunc.nas	2007-05-24 00:07:04.000000000 +0900
+@@ -15,11 +15,13 @@
+ 		GLOBAL	_load_tr
+ 		GLOBAL	_asm_inthandler20, _asm_inthandler21
+ 		GLOBAL	_asm_inthandler27, _asm_inthandler2c
++		GLOBAL	_asm_inthandler0d
+ 		GLOBAL	_memtest_sub
+ 		GLOBAL	_farjmp, _farcall
+ 		GLOBAL	_asm_hrb_api, _start_app
+ 		EXTERN	_inthandler20, _inthandler21
+ 		EXTERN	_inthandler27, _inthandler2c
++		EXTERN	_inthandler0d
+ 		EXTERN	_hrb_api
+ 
+ [SECTION .text]
+@@ -276,6 +278,67 @@
+ 		POP		ES
+ 		IRETD
+ 
++_asm_inthandler0d:
++		STI
++		PUSH	ES
++		PUSH	DS
++		PUSHAD
++		MOV		AX,SS
++		CMP		AX,1*8
++		JNE		.from_app
++;	OSが動いているときに割り込まれたのでほぼ今までどおり
++		MOV		EAX,ESP
++		PUSH	SS				; 割り込まれたときのSSを保存
++		PUSH	EAX				; 割り込まれたときのESPを保存
++		MOV		AX,SS
++		MOV		DS,AX
++		MOV		ES,AX
++		CALL	_inthandler0d
++		ADD		ESP,8
++		POPAD
++		POP		DS
++		POP		ES
++		ADD		ESP,4			; INT 0x0d では、これが必要
++		IRETD
++.from_app:
++;	アプリが動いているときに割り込まれた
++		CLI
++		MOV		EAX,1*8
++		MOV		DS,AX			; とりあえずDSだけOS用にする
++		MOV		ECX,[0xfe4]		; OSのESP
++		ADD		ECX,-8
++		MOV		[ECX+4],SS		; 割り込まれたときのSSを保存
++		MOV		[ECX  ],ESP		; 割り込まれたときのESPを保存
++		MOV		SS,AX
++		MOV		ES,AX
++		MOV		ESP,ECX
++		STI
++		CALL	_inthandler0d
++		CLI
++		CMP		EAX,0
++		JNE		.kill
++		POP		ECX
++		POP		EAX
++		MOV		SS,AX			; SSをアプリ用に戻す
++		MOV		ESP,ECX			; ESPもアプリ用に戻す
++		POPAD
++		POP		DS
++		POP		ES
++		ADD		ESP,4			; INT 0x0d では、これが必要
++		IRETD
++.kill:
++;	アプリを異常終了させることにした
++		MOV		EAX,1*8			; OS用のDS/SS
++		MOV		ES,AX
++		MOV		SS,AX
++		MOV		DS,AX
++		MOV		FS,AX
++		MOV		GS,AX
++		MOV		ESP,[0xfe4]		; start_appのときのESPに無理やり戻す
++		STI			; 切り替え完了なので割り込み可能に戻す
++		POPAD	; 保存しておいたレジスタを回復
++		RET
++
+ _memtest_sub:	; unsigned int memtest_sub(unsigned int start, unsigned int end)
+ 		PUSH	EDI						; （EBX, ESI, EDI も使いたいので）
+ 		PUSH	ESI
