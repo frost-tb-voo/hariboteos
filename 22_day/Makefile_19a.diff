@@ -1,0 +1,418 @@
+--- ./harib19a/Makefile	2005-10-12 16:53:04.000000000 +0900
++++ ./harib19b/Makefile	2005-10-12 17:09:22.000000000 +0900
+@@ -67,30 +67,14 @@
+ hello3.hrb : hello3.bim Makefile
+ 	$(BIM2HRB) hello3.bim hello3.hrb 0
+ 
+-crack1.bim : crack1.obj Makefile
+-	$(OBJ2BIM) @$(RULEFILE) out:crack1.bim map:crack1.map crack1.obj a_nask.obj
++bug1.bim : bug1.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:bug1.bim map:bug1.map bug1.obj a_nask.obj
+ 
+-crack1.hrb : crack1.bim Makefile
+-	$(BIM2HRB) crack1.bim crack1.hrb 0
+-
+-crack2.hrb : crack2.nas Makefile
+-	$(NASK) crack2.nas crack2.hrb crack2.lst
+-
+-crack3.hrb : crack3.nas Makefile
+-	$(NASK) crack3.nas crack3.hrb crack3.lst
+-
+-crack4.hrb : crack4.nas Makefile
+-	$(NASK) crack4.nas crack4.hrb crack4.lst
+-
+-crack5.hrb : crack5.nas Makefile
+-	$(NASK) crack5.nas crack5.hrb crack5.lst
+-
+-crack6.hrb : crack6.nas Makefile
+-	$(NASK) crack6.nas crack6.hrb crack6.lst
++bug1.hrb : bug1.bim Makefile
++	$(BIM2HRB) bug1.bim bug1.hrb 0
+ 
+ haribote.img : ipl10.bin haribote.sys Makefile \
+-		hello.hrb hello2.hrb a.hrb hello3.hrb crack1.hrb crack2.hrb crack3.hrb \
+-		crack4.hrb crack5.hrb crack6.hrb
++		hello.hrb hello2.hrb a.hrb hello3.hrb bug1.hrb
+ 	$(EDIMG)   imgin:../z_tools/fdimg0at.tek \
+ 		wbinimg src:ipl10.bin len:512 from:0 to:0 \
+ 		copy from:haribote.sys to:@: \
+@@ -100,12 +84,7 @@
+ 		copy from:hello2.hrb to:@: \
+ 		copy from:a.hrb to:@: \
+ 		copy from:hello3.hrb to:@: \
+-		copy from:crack1.hrb to:@: \
+-		copy from:crack2.hrb to:@: \
+-		copy from:crack3.hrb to:@: \
+-		copy from:crack4.hrb to:@: \
+-		copy from:crack5.hrb to:@: \
+-		copy from:crack6.hrb to:@: \
++		copy from:bug1.hrb to:@: \
+ 		imgout:haribote.img
+ 
+ # 一般規則
+--- ./harib19a/Makefile	2005-10-12 16:53:04.000000000 +0900
++++ ./harib19e/Makefile	2005-10-18 01:55:58.000000000 +0900
+@@ -67,30 +67,40 @@
+ hello3.hrb : hello3.bim Makefile
+ 	$(BIM2HRB) hello3.bim hello3.hrb 0
+ 
+-crack1.bim : crack1.obj Makefile
+-	$(OBJ2BIM) @$(RULEFILE) out:crack1.bim map:crack1.map crack1.obj a_nask.obj
++hello4.bim : hello4.obj a_nask.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:hello4.bim stack:1k map:hello4.map \
++		hello4.obj a_nask.obj
+ 
+-crack1.hrb : crack1.bim Makefile
+-	$(BIM2HRB) crack1.bim crack1.hrb 0
++hello4.hrb : hello4.bim Makefile
++	$(BIM2HRB) hello4.bim hello4.hrb 0
+ 
+-crack2.hrb : crack2.nas Makefile
+-	$(NASK) crack2.nas crack2.hrb crack2.lst
++hello5.bim : hello5.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:hello5.bim stack:1k map:hello5.map hello5.obj
+ 
+-crack3.hrb : crack3.nas Makefile
+-	$(NASK) crack3.nas crack3.hrb crack3.lst
++hello5.hrb : hello5.bim Makefile
++	$(BIM2HRB) hello5.bim hello5.hrb 0
+ 
+-crack4.hrb : crack4.nas Makefile
+-	$(NASK) crack4.nas crack4.hrb crack4.lst
++bug1.bim : bug1.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:bug1.bim map:bug1.map bug1.obj a_nask.obj
+ 
+-crack5.hrb : crack5.nas Makefile
+-	$(NASK) crack5.nas crack5.hrb crack5.lst
++bug1.hrb : bug1.bim Makefile
++	$(BIM2HRB) bug1.bim bug1.hrb 0
+ 
+-crack6.hrb : crack6.nas Makefile
+-	$(NASK) crack6.nas crack6.hrb crack6.lst
++bug2.bim : bug2.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:bug2.bim map:bug2.map bug2.obj
++
++bug2.hrb : bug2.bim Makefile
++	$(BIM2HRB) bug2.bim bug2.hrb 0
++
++bug3.bim : bug3.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:bug3.bim map:bug3.map bug3.obj a_nask.obj
++
++bug3.hrb : bug3.bim Makefile
++	$(BIM2HRB) bug3.bim bug3.hrb 0
+ 
+ haribote.img : ipl10.bin haribote.sys Makefile \
+-		hello.hrb hello2.hrb a.hrb hello3.hrb crack1.hrb crack2.hrb crack3.hrb \
+-		crack4.hrb crack5.hrb crack6.hrb
++		hello.hrb hello2.hrb a.hrb hello3.hrb bug1.hrb bug2.hrb bug3.hrb \
++		hello4.hrb hello5.hrb
+ 	$(EDIMG)   imgin:../z_tools/fdimg0at.tek \
+ 		wbinimg src:ipl10.bin len:512 from:0 to:0 \
+ 		copy from:haribote.sys to:@: \
+@@ -100,12 +110,11 @@
+ 		copy from:hello2.hrb to:@: \
+ 		copy from:a.hrb to:@: \
+ 		copy from:hello3.hrb to:@: \
+-		copy from:crack1.hrb to:@: \
+-		copy from:crack2.hrb to:@: \
+-		copy from:crack3.hrb to:@: \
+-		copy from:crack4.hrb to:@: \
+-		copy from:crack5.hrb to:@: \
+-		copy from:crack6.hrb to:@: \
++		copy from:bug1.hrb to:@: \
++		copy from:bug2.hrb to:@: \
++		copy from:bug3.hrb to:@: \
++		copy from:hello4.hrb to:@: \
++		copy from:hello5.hrb to:@: \
+ 		imgout:haribote.img
+ 
+ # 一般規則
+--- ./harib19a/Makefile	2005-10-12 16:53:04.000000000 +0900
++++ ./harib19c/Makefile	2005-10-13 18:40:12.000000000 +0900
+@@ -67,30 +67,26 @@
+ hello3.hrb : hello3.bim Makefile
+ 	$(BIM2HRB) hello3.bim hello3.hrb 0
+ 
+-crack1.bim : crack1.obj Makefile
+-	$(OBJ2BIM) @$(RULEFILE) out:crack1.bim map:crack1.map crack1.obj a_nask.obj
++bug1.bim : bug1.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:bug1.bim map:bug1.map bug1.obj a_nask.obj
+ 
+-crack1.hrb : crack1.bim Makefile
+-	$(BIM2HRB) crack1.bim crack1.hrb 0
++bug1.hrb : bug1.bim Makefile
++	$(BIM2HRB) bug1.bim bug1.hrb 0
+ 
+-crack2.hrb : crack2.nas Makefile
+-	$(NASK) crack2.nas crack2.hrb crack2.lst
++bug2.bim : bug2.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:bug2.bim map:bug2.map bug2.obj
+ 
+-crack3.hrb : crack3.nas Makefile
+-	$(NASK) crack3.nas crack3.hrb crack3.lst
++bug2.hrb : bug2.bim Makefile
++	$(BIM2HRB) bug2.bim bug2.hrb 0
+ 
+-crack4.hrb : crack4.nas Makefile
+-	$(NASK) crack4.nas crack4.hrb crack4.lst
++bug3.bim : bug3.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:bug3.bim map:bug3.map bug3.obj a_nask.obj
+ 
+-crack5.hrb : crack5.nas Makefile
+-	$(NASK) crack5.nas crack5.hrb crack5.lst
+-
+-crack6.hrb : crack6.nas Makefile
+-	$(NASK) crack6.nas crack6.hrb crack6.lst
++bug3.hrb : bug3.bim Makefile
++	$(BIM2HRB) bug3.bim bug3.hrb 0
+ 
+ haribote.img : ipl10.bin haribote.sys Makefile \
+-		hello.hrb hello2.hrb a.hrb hello3.hrb crack1.hrb crack2.hrb crack3.hrb \
+-		crack4.hrb crack5.hrb crack6.hrb
++		hello.hrb hello2.hrb a.hrb hello3.hrb bug1.hrb bug2.hrb bug3.hrb
+ 	$(EDIMG)   imgin:../z_tools/fdimg0at.tek \
+ 		wbinimg src:ipl10.bin len:512 from:0 to:0 \
+ 		copy from:haribote.sys to:@: \
+@@ -100,12 +96,9 @@
+ 		copy from:hello2.hrb to:@: \
+ 		copy from:a.hrb to:@: \
+ 		copy from:hello3.hrb to:@: \
+-		copy from:crack1.hrb to:@: \
+-		copy from:crack2.hrb to:@: \
+-		copy from:crack3.hrb to:@: \
+-		copy from:crack4.hrb to:@: \
+-		copy from:crack5.hrb to:@: \
+-		copy from:crack6.hrb to:@: \
++		copy from:bug1.hrb to:@: \
++		copy from:bug2.hrb to:@: \
++		copy from:bug3.hrb to:@: \
+ 		imgout:haribote.img
+ 
+ # 一般規則
+--- ./harib19a/Makefile	2005-10-12 16:53:04.000000000 +0900
++++ ./harib19f/Makefile	2005-10-18 23:49:54.000000000 +0900
+@@ -67,30 +67,47 @@
+ hello3.hrb : hello3.bim Makefile
+ 	$(BIM2HRB) hello3.bim hello3.hrb 0
+ 
+-crack1.bim : crack1.obj Makefile
+-	$(OBJ2BIM) @$(RULEFILE) out:crack1.bim map:crack1.map crack1.obj a_nask.obj
++hello4.bim : hello4.obj a_nask.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:hello4.bim stack:1k map:hello4.map \
++		hello4.obj a_nask.obj
+ 
+-crack1.hrb : crack1.bim Makefile
+-	$(BIM2HRB) crack1.bim crack1.hrb 0
++hello4.hrb : hello4.bim Makefile
++	$(BIM2HRB) hello4.bim hello4.hrb 0
+ 
+-crack2.hrb : crack2.nas Makefile
+-	$(NASK) crack2.nas crack2.hrb crack2.lst
++hello5.bim : hello5.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:hello5.bim stack:1k map:hello5.map hello5.obj
+ 
+-crack3.hrb : crack3.nas Makefile
+-	$(NASK) crack3.nas crack3.hrb crack3.lst
++hello5.hrb : hello5.bim Makefile
++	$(BIM2HRB) hello5.bim hello5.hrb 0
+ 
+-crack4.hrb : crack4.nas Makefile
+-	$(NASK) crack4.nas crack4.hrb crack4.lst
++winhelo.bim : winhelo.obj a_nask.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:winhelo.bim stack:1k map:winhelo.map \
++		winhelo.obj a_nask.obj
+ 
+-crack5.hrb : crack5.nas Makefile
+-	$(NASK) crack5.nas crack5.hrb crack5.lst
++winhelo.hrb : winhelo.bim Makefile
++	$(BIM2HRB) winhelo.bim winhelo.hrb 0
+ 
+-crack6.hrb : crack6.nas Makefile
+-	$(NASK) crack6.nas crack6.hrb crack6.lst
++bug1.bim : bug1.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:bug1.bim map:bug1.map bug1.obj a_nask.obj
++
++bug1.hrb : bug1.bim Makefile
++	$(BIM2HRB) bug1.bim bug1.hrb 0
++
++bug2.bim : bug2.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:bug2.bim map:bug2.map bug2.obj
++
++bug2.hrb : bug2.bim Makefile
++	$(BIM2HRB) bug2.bim bug2.hrb 0
++
++bug3.bim : bug3.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:bug3.bim map:bug3.map bug3.obj a_nask.obj
++
++bug3.hrb : bug3.bim Makefile
++	$(BIM2HRB) bug3.bim bug3.hrb 0
+ 
+ haribote.img : ipl10.bin haribote.sys Makefile \
+-		hello.hrb hello2.hrb a.hrb hello3.hrb crack1.hrb crack2.hrb crack3.hrb \
+-		crack4.hrb crack5.hrb crack6.hrb
++		hello.hrb hello2.hrb a.hrb hello3.hrb bug1.hrb bug2.hrb bug3.hrb \
++		hello4.hrb hello5.hrb winhelo.hrb
+ 	$(EDIMG)   imgin:../z_tools/fdimg0at.tek \
+ 		wbinimg src:ipl10.bin len:512 from:0 to:0 \
+ 		copy from:haribote.sys to:@: \
+@@ -100,12 +117,12 @@
+ 		copy from:hello2.hrb to:@: \
+ 		copy from:a.hrb to:@: \
+ 		copy from:hello3.hrb to:@: \
+-		copy from:crack1.hrb to:@: \
+-		copy from:crack2.hrb to:@: \
+-		copy from:crack3.hrb to:@: \
+-		copy from:crack4.hrb to:@: \
+-		copy from:crack5.hrb to:@: \
+-		copy from:crack6.hrb to:@: \
++		copy from:bug1.hrb to:@: \
++		copy from:bug2.hrb to:@: \
++		copy from:bug3.hrb to:@: \
++		copy from:hello4.hrb to:@: \
++		copy from:hello5.hrb to:@: \
++		copy from:winhelo.hrb to:@: \
+ 		imgout:haribote.img
+ 
+ # 一般規則
+--- ./harib19a/Makefile	2005-10-12 16:53:04.000000000 +0900
++++ ./harib19d/Makefile	2005-10-14 20:40:46.000000000 +0900
+@@ -67,30 +67,34 @@
+ hello3.hrb : hello3.bim Makefile
+ 	$(BIM2HRB) hello3.bim hello3.hrb 0
+ 
+-crack1.bim : crack1.obj Makefile
+-	$(OBJ2BIM) @$(RULEFILE) out:crack1.bim map:crack1.map crack1.obj a_nask.obj
++hello4.bim : hello4.obj a_nask.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:hello4.bim stack:1k map:hello4.map \
++		hello4.obj a_nask.obj
+ 
+-crack1.hrb : crack1.bim Makefile
+-	$(BIM2HRB) crack1.bim crack1.hrb 0
++hello4.hrb : hello4.bim Makefile
++	$(BIM2HRB) hello4.bim hello4.hrb 0
+ 
+-crack2.hrb : crack2.nas Makefile
+-	$(NASK) crack2.nas crack2.hrb crack2.lst
++bug1.bim : bug1.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:bug1.bim map:bug1.map bug1.obj a_nask.obj
+ 
+-crack3.hrb : crack3.nas Makefile
+-	$(NASK) crack3.nas crack3.hrb crack3.lst
++bug1.hrb : bug1.bim Makefile
++	$(BIM2HRB) bug1.bim bug1.hrb 0
+ 
+-crack4.hrb : crack4.nas Makefile
+-	$(NASK) crack4.nas crack4.hrb crack4.lst
++bug2.bim : bug2.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:bug2.bim map:bug2.map bug2.obj
+ 
+-crack5.hrb : crack5.nas Makefile
+-	$(NASK) crack5.nas crack5.hrb crack5.lst
++bug2.hrb : bug2.bim Makefile
++	$(BIM2HRB) bug2.bim bug2.hrb 0
+ 
+-crack6.hrb : crack6.nas Makefile
+-	$(NASK) crack6.nas crack6.hrb crack6.lst
++bug3.bim : bug3.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:bug3.bim map:bug3.map bug3.obj a_nask.obj
++
++bug3.hrb : bug3.bim Makefile
++	$(BIM2HRB) bug3.bim bug3.hrb 0
+ 
+ haribote.img : ipl10.bin haribote.sys Makefile \
+-		hello.hrb hello2.hrb a.hrb hello3.hrb crack1.hrb crack2.hrb crack3.hrb \
+-		crack4.hrb crack5.hrb crack6.hrb
++		hello.hrb hello2.hrb a.hrb hello3.hrb bug1.hrb bug2.hrb bug3.hrb \
++		hello4.hrb
+ 	$(EDIMG)   imgin:../z_tools/fdimg0at.tek \
+ 		wbinimg src:ipl10.bin len:512 from:0 to:0 \
+ 		copy from:haribote.sys to:@: \
+@@ -100,12 +104,10 @@
+ 		copy from:hello2.hrb to:@: \
+ 		copy from:a.hrb to:@: \
+ 		copy from:hello3.hrb to:@: \
+-		copy from:crack1.hrb to:@: \
+-		copy from:crack2.hrb to:@: \
+-		copy from:crack3.hrb to:@: \
+-		copy from:crack4.hrb to:@: \
+-		copy from:crack5.hrb to:@: \
+-		copy from:crack6.hrb to:@: \
++		copy from:bug1.hrb to:@: \
++		copy from:bug2.hrb to:@: \
++		copy from:bug3.hrb to:@: \
++		copy from:hello4.hrb to:@: \
+ 		imgout:haribote.img
+ 
+ # 一般規則
+--- ./harib19a/Makefile	2005-10-12 16:53:04.000000000 +0900
++++ ./harib19g/Makefile	2005-10-19 15:08:48.000000000 +0900
+@@ -67,30 +67,36 @@
+ hello3.hrb : hello3.bim Makefile
+ 	$(BIM2HRB) hello3.bim hello3.hrb 0
+ 
+-crack1.bim : crack1.obj Makefile
+-	$(OBJ2BIM) @$(RULEFILE) out:crack1.bim map:crack1.map crack1.obj a_nask.obj
++hello4.bim : hello4.obj a_nask.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:hello4.bim stack:1k map:hello4.map \
++		hello4.obj a_nask.obj
+ 
+-crack1.hrb : crack1.bim Makefile
+-	$(BIM2HRB) crack1.bim crack1.hrb 0
++hello4.hrb : hello4.bim Makefile
++	$(BIM2HRB) hello4.bim hello4.hrb 0
+ 
+-crack2.hrb : crack2.nas Makefile
+-	$(NASK) crack2.nas crack2.hrb crack2.lst
++hello5.bim : hello5.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:hello5.bim stack:1k map:hello5.map hello5.obj
+ 
+-crack3.hrb : crack3.nas Makefile
+-	$(NASK) crack3.nas crack3.hrb crack3.lst
++hello5.hrb : hello5.bim Makefile
++	$(BIM2HRB) hello5.bim hello5.hrb 0
+ 
+-crack4.hrb : crack4.nas Makefile
+-	$(NASK) crack4.nas crack4.hrb crack4.lst
++winhelo.bim : winhelo.obj a_nask.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:winhelo.bim stack:1k map:winhelo.map \
++		winhelo.obj a_nask.obj
+ 
+-crack5.hrb : crack5.nas Makefile
+-	$(NASK) crack5.nas crack5.hrb crack5.lst
++winhelo.hrb : winhelo.bim Makefile
++	$(BIM2HRB) winhelo.bim winhelo.hrb 0
+ 
+-crack6.hrb : crack6.nas Makefile
+-	$(NASK) crack6.nas crack6.hrb crack6.lst
++winhelo2.bim : winhelo2.obj a_nask.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:winhelo2.bim stack:1k map:winhelo2.map \
++		winhelo2.obj a_nask.obj
++
++winhelo2.hrb : winhelo2.bim Makefile
++	$(BIM2HRB) winhelo2.bim winhelo2.hrb 0
+ 
+ haribote.img : ipl10.bin haribote.sys Makefile \
+-		hello.hrb hello2.hrb a.hrb hello3.hrb crack1.hrb crack2.hrb crack3.hrb \
+-		crack4.hrb crack5.hrb crack6.hrb
++		hello.hrb hello2.hrb a.hrb hello3.hrb hello4.hrb hello5.hrb \
++		winhelo.hrb winhelo2.hrb
+ 	$(EDIMG)   imgin:../z_tools/fdimg0at.tek \
+ 		wbinimg src:ipl10.bin len:512 from:0 to:0 \
+ 		copy from:haribote.sys to:@: \
+@@ -100,12 +106,10 @@
+ 		copy from:hello2.hrb to:@: \
+ 		copy from:a.hrb to:@: \
+ 		copy from:hello3.hrb to:@: \
+-		copy from:crack1.hrb to:@: \
+-		copy from:crack2.hrb to:@: \
+-		copy from:crack3.hrb to:@: \
+-		copy from:crack4.hrb to:@: \
+-		copy from:crack5.hrb to:@: \
+-		copy from:crack6.hrb to:@: \
++		copy from:hello4.hrb to:@: \
++		copy from:hello5.hrb to:@: \
++		copy from:winhelo.hrb to:@: \
++		copy from:winhelo2.hrb to:@: \
+ 		imgout:haribote.img
+ 
+ # 一般規則
