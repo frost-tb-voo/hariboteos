@@ -1,0 +1,35 @@
+diff -u ./25_day/harib22j/sheet.c ./26_day/harib23a/sheet.c
+--- ./25_day/harib22j/sheet.c	2005-10-28 21:18:04.000000000 +0900
++++ ./26_day/harib23a/sheet.c	2005-11-23 14:38:24.000000000 +0900
+@@ -75,14 +75,26 @@
+ 		if (by0 < 0) { by0 = 0; }
+ 		if (bx1 > sht->bxsize) { bx1 = sht->bxsize; }
+ 		if (by1 > sht->bysize) { by1 = sht->bysize; }
+-		for (by = by0; by < by1; by++) {
+-			vy = sht->vy0 + by;
+-			for (bx = bx0; bx < bx1; bx++) {
+-				vx = sht->vx0 + bx;
+-				if (buf[by * sht->bxsize + bx] != sht->col_inv) {
++		if (sht->col_inv == -1) {
++			/* 透明色なし専用の高速版 */
++			for (by = by0; by < by1; by++) {
++				vy = sht->vy0 + by;
++				for (bx = bx0; bx < bx1; bx++) {
++					vx = sht->vx0 + bx;
+ 					map[vy * ctl->xsize + vx] = sid;
+ 				}
+ 			}
++		} else {
++			/* 透明色ありの一般版 */
++			for (by = by0; by < by1; by++) {
++				vy = sht->vy0 + by;
++				for (bx = bx0; bx < bx1; bx++) {
++					vx = sht->vx0 + bx;
++					if (buf[by * sht->bxsize + bx] != sht->col_inv) {
++						map[vy * ctl->xsize + vx] = sid;
++					}
++				}
++			}
+ 		}
+ 	}
+ 	return;

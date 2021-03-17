@@ -1,0 +1,28 @@
+diff -u ./26_day/harib23g/bootpack.c ./26_day/harib23h/bootpack.c
+--- ./26_day/harib23g/bootpack.c	2005-11-30 01:14:56.000000000 +0900
++++ ./26_day/harib23h/bootpack.c	2005-11-30 16:14:28.000000000 +0900
+@@ -270,6 +270,11 @@
+ 												task->tss.eax = (int) &(task->tss.esp0);
+ 												task->tss.eip = (int) asm_end_app;
+ 												io_sti();
++											} else {	/* コンソール */
++												task = sht->task;
++												io_cli();
++												fifo32_put(&task->fifo, 4);
++												io_sti();
+ 											}
+ 										}
+ 										break;
+diff -u ./26_day/harib23g/console.c ./26_day/harib23h/console.c
+--- ./26_day/harib23g/console.c	2006-04-01 01:00:50.000000000 +0900
++++ ./26_day/harib23h/console.c	2006-04-01 03:20:36.000000000 +0900
+@@ -54,6 +54,9 @@
+ 				boxfill8(sheet->buf, sheet->bxsize, COL8_000000, cons.cur_x, cons.cur_y, cons.cur_x + 7, cons.cur_y + 15);
+ 				cons.cur_c = -1;
+ 			}
++			if (i == 4) {	/* コンソールの「×」ボタンクリック */
++				cmd_exit(&cons, fat);
++			}
+ 			if (256 <= i && i <= 511) { /* キーボードデータ（タスクA経由） */
+ 				if (i == 8 + 256) {
+ 					/* バックスペース */
