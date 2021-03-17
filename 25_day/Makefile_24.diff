@@ -1,0 +1,746 @@
+--- ../24_day/harib21h/Makefile	2021-03-17 04:51:58.450252855 +0900
++++ ./harib22b/Makefile	2021-03-18 05:18:54.263673803 +0900
+@@ -146,10 +146,24 @@
+ noodle.hrb : noodle.bim Makefile
+ 	$(BIM2HRB) noodle.bim noodle.hrb 40k
+ 
++beepdown.bim : beepdown.obj a_nask.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:beepdown.bim stack:1k map:beepdown.map \
++		beepdown.obj a_nask.obj
++
++beepdown.hrb : beepdown.bim Makefile
++	$(BIM2HRB) beepdown.bim beepdown.hrb 40k
++
++color.bim : color.obj a_nask.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:color.bim stack:1k map:color.map \
++		color.obj a_nask.obj
++
++color.hrb : color.bim Makefile
++	$(BIM2HRB) color.bim color.hrb 56k
++
+ haribote.img : ipl10.bin haribote.sys Makefile \
+ 		hello.hrb hello2.hrb a.hrb hello3.hrb hello4.hrb hello5.hrb \
+ 		winhelo.hrb winhelo2.hrb winhelo3.hrb star1.hrb stars.hrb stars2.hrb \
+-		lines.hrb walk.hrb noodle.hrb
++		lines.hrb walk.hrb noodle.hrb beepdown.hrb color.hrb
+ 	$(EDIMG)   imgin:${TOLSET}/z_tools/fdimg0at.tek \
+ 		wbinimg src:ipl10.bin len:512 from:0 to:0 \
+ 		copy from:haribote.sys to:@: \
+@@ -170,6 +184,8 @@
+ 		copy from:lines.hrb to:@: \
+ 		copy from:walk.hrb to:@: \
+ 		copy from:noodle.hrb to:@: \
++		copy from:beepdown.hrb to:@: \
++		copy from:color.hrb to:@: \
+ 		imgout:haribote.img
+ 
+ # 一般規則
+--- ../24_day/harib21h/Makefile	2021-03-17 04:51:58.450252855 +0900
++++ ./harib22f/Makefile	2006-01-29 23:49:44.000000000 +0900
+@@ -1,11 +1,9 @@
+-TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
+-
+ OBJS_BOOTPACK = bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj \
+ 		int.obj fifo.obj keyboard.obj mouse.obj memory.obj sheet.obj timer.obj \
+ 		mtask.obj window.obj console.obj file.obj
+ 
+-TOOLPATH = ${TOLSET}/z_tools/
+-INCPATH  = ${TOLSET}/z_tools/haribote/
++TOOLPATH = ../z_tools/
++INCPATH  = ../z_tools/haribote/
+ 
+ MAKE     = $(TOOLPATH)make.exe -r
+ NASK     = $(TOOLPATH)nask.exe
+@@ -41,7 +39,6 @@
+ 	$(BIN2OBJ) hankaku.bin hankaku.obj _hankaku
+ 
+ bootpack.bim : $(OBJS_BOOTPACK) Makefile
+-	XCOPY ${TOLSET}\z_tools\haribote ..\z_tools\haribote /I /Y 
+ 	$(OBJ2BIM) @$(RULEFILE) out:bootpack.bim stack:3136k map:bootpack.map \
+ 		$(OBJS_BOOTPACK)
+ # 3MB+64KB=3136KB
+@@ -146,15 +143,36 @@
+ noodle.hrb : noodle.bim Makefile
+ 	$(BIM2HRB) noodle.bim noodle.hrb 40k
+ 
++beepdown.bim : beepdown.obj a_nask.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:beepdown.bim stack:1k map:beepdown.map \
++		beepdown.obj a_nask.obj
++
++beepdown.hrb : beepdown.bim Makefile
++	$(BIM2HRB) beepdown.bim beepdown.hrb 40k
++
++color.bim : color.obj a_nask.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:color.bim stack:1k map:color.map \
++		color.obj a_nask.obj
++
++color.hrb : color.bim Makefile
++	$(BIM2HRB) color.bim color.hrb 56k
++
++color2.bim : color2.obj a_nask.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:color2.bim stack:1k map:color2.map \
++		color2.obj a_nask.obj
++
++color2.hrb : color2.bim Makefile
++	$(BIM2HRB) color2.bim color2.hrb 56k
++
+ haribote.img : ipl10.bin haribote.sys Makefile \
+ 		hello.hrb hello2.hrb a.hrb hello3.hrb hello4.hrb hello5.hrb \
+ 		winhelo.hrb winhelo2.hrb winhelo3.hrb star1.hrb stars.hrb stars2.hrb \
+-		lines.hrb walk.hrb noodle.hrb
+-	$(EDIMG)   imgin:${TOLSET}/z_tools/fdimg0at.tek \
++		lines.hrb walk.hrb noodle.hrb beepdown.hrb color.hrb color2.hrb
++	$(EDIMG)   imgin:../z_tools/fdimg0at.tek \
+ 		wbinimg src:ipl10.bin len:512 from:0 to:0 \
+ 		copy from:haribote.sys to:@: \
+ 		copy from:ipl10.nas to:@: \
+-		copy from:keyboard.c to:@: \
++		copy from:make.bat to:@: \
+ 		copy from:hello.hrb to:@: \
+ 		copy from:hello2.hrb to:@: \
+ 		copy from:a.hrb to:@: \
+@@ -170,6 +188,9 @@
+ 		copy from:lines.hrb to:@: \
+ 		copy from:walk.hrb to:@: \
+ 		copy from:noodle.hrb to:@: \
++		copy from:beepdown.hrb to:@: \
++		copy from:color.hrb to:@: \
++		copy from:color2.hrb to:@: \
+ 		imgout:haribote.img
+ 
+ # 一般規則
+@@ -190,8 +211,8 @@
+ 
+ run :
+ 	$(MAKE) img
+-	$(COPY) haribote.img ${TOLSET}\z_tools\qemu\fdimage0.bin
+-	$(MAKE) -C ${TOLSET}/z_tools/qemu
++	$(COPY) haribote.img ..\z_tools\qemu\fdimage0.bin
++	$(MAKE) -C ../z_tools/qemu
+ 
+ install :
+ 	$(MAKE) img
+--- ../24_day/harib21h/Makefile	2021-03-17 04:51:58.450252855 +0900
++++ ./harib22e/Makefile	2006-01-29 23:49:14.000000000 +0900
+@@ -1,11 +1,9 @@
+-TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
+-
+ OBJS_BOOTPACK = bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj \
+ 		int.obj fifo.obj keyboard.obj mouse.obj memory.obj sheet.obj timer.obj \
+ 		mtask.obj window.obj console.obj file.obj
+ 
+-TOOLPATH = ${TOLSET}/z_tools/
+-INCPATH  = ${TOLSET}/z_tools/haribote/
++TOOLPATH = ../z_tools/
++INCPATH  = ../z_tools/haribote/
+ 
+ MAKE     = $(TOOLPATH)make.exe -r
+ NASK     = $(TOOLPATH)nask.exe
+@@ -41,7 +39,6 @@
+ 	$(BIN2OBJ) hankaku.bin hankaku.obj _hankaku
+ 
+ bootpack.bim : $(OBJS_BOOTPACK) Makefile
+-	XCOPY ${TOLSET}\z_tools\haribote ..\z_tools\haribote /I /Y 
+ 	$(OBJ2BIM) @$(RULEFILE) out:bootpack.bim stack:3136k map:bootpack.map \
+ 		$(OBJS_BOOTPACK)
+ # 3MB+64KB=3136KB
+@@ -146,15 +143,36 @@
+ noodle.hrb : noodle.bim Makefile
+ 	$(BIM2HRB) noodle.bim noodle.hrb 40k
+ 
++beepdown.bim : beepdown.obj a_nask.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:beepdown.bim stack:1k map:beepdown.map \
++		beepdown.obj a_nask.obj
++
++beepdown.hrb : beepdown.bim Makefile
++	$(BIM2HRB) beepdown.bim beepdown.hrb 40k
++
++color.bim : color.obj a_nask.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:color.bim stack:1k map:color.map \
++		color.obj a_nask.obj
++
++color.hrb : color.bim Makefile
++	$(BIM2HRB) color.bim color.hrb 56k
++
++color2.bim : color2.obj a_nask.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:color2.bim stack:1k map:color2.map \
++		color2.obj a_nask.obj
++
++color2.hrb : color2.bim Makefile
++	$(BIM2HRB) color2.bim color2.hrb 56k
++
+ haribote.img : ipl10.bin haribote.sys Makefile \
+ 		hello.hrb hello2.hrb a.hrb hello3.hrb hello4.hrb hello5.hrb \
+ 		winhelo.hrb winhelo2.hrb winhelo3.hrb star1.hrb stars.hrb stars2.hrb \
+-		lines.hrb walk.hrb noodle.hrb
+-	$(EDIMG)   imgin:${TOLSET}/z_tools/fdimg0at.tek \
++		lines.hrb walk.hrb noodle.hrb beepdown.hrb color.hrb color2.hrb
++	$(EDIMG)   imgin:../z_tools/fdimg0at.tek \
+ 		wbinimg src:ipl10.bin len:512 from:0 to:0 \
+ 		copy from:haribote.sys to:@: \
+ 		copy from:ipl10.nas to:@: \
+-		copy from:keyboard.c to:@: \
++		copy from:make.bat to:@: \
+ 		copy from:hello.hrb to:@: \
+ 		copy from:hello2.hrb to:@: \
+ 		copy from:a.hrb to:@: \
+@@ -170,6 +188,9 @@
+ 		copy from:lines.hrb to:@: \
+ 		copy from:walk.hrb to:@: \
+ 		copy from:noodle.hrb to:@: \
++		copy from:beepdown.hrb to:@: \
++		copy from:color.hrb to:@: \
++		copy from:color2.hrb to:@: \
+ 		imgout:haribote.img
+ 
+ # 一般規則
+@@ -190,8 +211,8 @@
+ 
+ run :
+ 	$(MAKE) img
+-	$(COPY) haribote.img ${TOLSET}\z_tools\qemu\fdimage0.bin
+-	$(MAKE) -C ${TOLSET}/z_tools/qemu
++	$(COPY) haribote.img ..\z_tools\qemu\fdimage0.bin
++	$(MAKE) -C ../z_tools/qemu
+ 
+ install :
+ 	$(MAKE) img
+--- ../24_day/harib21h/Makefile	2021-03-17 04:51:58.450252855 +0900
++++ ./harib22d/Makefile	2006-01-29 23:48:42.000000000 +0900
+@@ -1,11 +1,9 @@
+-TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
+-
+ OBJS_BOOTPACK = bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj \
+ 		int.obj fifo.obj keyboard.obj mouse.obj memory.obj sheet.obj timer.obj \
+ 		mtask.obj window.obj console.obj file.obj
+ 
+-TOOLPATH = ${TOLSET}/z_tools/
+-INCPATH  = ${TOLSET}/z_tools/haribote/
++TOOLPATH = ../z_tools/
++INCPATH  = ../z_tools/haribote/
+ 
+ MAKE     = $(TOOLPATH)make.exe -r
+ NASK     = $(TOOLPATH)nask.exe
+@@ -41,7 +39,6 @@
+ 	$(BIN2OBJ) hankaku.bin hankaku.obj _hankaku
+ 
+ bootpack.bim : $(OBJS_BOOTPACK) Makefile
+-	XCOPY ${TOLSET}\z_tools\haribote ..\z_tools\haribote /I /Y 
+ 	$(OBJ2BIM) @$(RULEFILE) out:bootpack.bim stack:3136k map:bootpack.map \
+ 		$(OBJS_BOOTPACK)
+ # 3MB+64KB=3136KB
+@@ -146,15 +143,36 @@
+ noodle.hrb : noodle.bim Makefile
+ 	$(BIM2HRB) noodle.bim noodle.hrb 40k
+ 
++beepdown.bim : beepdown.obj a_nask.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:beepdown.bim stack:1k map:beepdown.map \
++		beepdown.obj a_nask.obj
++
++beepdown.hrb : beepdown.bim Makefile
++	$(BIM2HRB) beepdown.bim beepdown.hrb 40k
++
++color.bim : color.obj a_nask.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:color.bim stack:1k map:color.map \
++		color.obj a_nask.obj
++
++color.hrb : color.bim Makefile
++	$(BIM2HRB) color.bim color.hrb 56k
++
++color2.bim : color2.obj a_nask.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:color2.bim stack:1k map:color2.map \
++		color2.obj a_nask.obj
++
++color2.hrb : color2.bim Makefile
++	$(BIM2HRB) color2.bim color2.hrb 56k
++
+ haribote.img : ipl10.bin haribote.sys Makefile \
+ 		hello.hrb hello2.hrb a.hrb hello3.hrb hello4.hrb hello5.hrb \
+ 		winhelo.hrb winhelo2.hrb winhelo3.hrb star1.hrb stars.hrb stars2.hrb \
+-		lines.hrb walk.hrb noodle.hrb
+-	$(EDIMG)   imgin:${TOLSET}/z_tools/fdimg0at.tek \
++		lines.hrb walk.hrb noodle.hrb beepdown.hrb color.hrb color2.hrb
++	$(EDIMG)   imgin:../z_tools/fdimg0at.tek \
+ 		wbinimg src:ipl10.bin len:512 from:0 to:0 \
+ 		copy from:haribote.sys to:@: \
+ 		copy from:ipl10.nas to:@: \
+-		copy from:keyboard.c to:@: \
++		copy from:make.bat to:@: \
+ 		copy from:hello.hrb to:@: \
+ 		copy from:hello2.hrb to:@: \
+ 		copy from:a.hrb to:@: \
+@@ -170,6 +188,9 @@
+ 		copy from:lines.hrb to:@: \
+ 		copy from:walk.hrb to:@: \
+ 		copy from:noodle.hrb to:@: \
++		copy from:beepdown.hrb to:@: \
++		copy from:color.hrb to:@: \
++		copy from:color2.hrb to:@: \
+ 		imgout:haribote.img
+ 
+ # 一般規則
+@@ -190,8 +211,8 @@
+ 
+ run :
+ 	$(MAKE) img
+-	$(COPY) haribote.img ${TOLSET}\z_tools\qemu\fdimage0.bin
+-	$(MAKE) -C ${TOLSET}/z_tools/qemu
++	$(COPY) haribote.img ..\z_tools\qemu\fdimage0.bin
++	$(MAKE) -C ../z_tools/qemu
+ 
+ install :
+ 	$(MAKE) img
+--- ../24_day/harib21h/Makefile	2021-03-17 04:51:58.450252855 +0900
++++ ./harib22g/Makefile	2006-01-29 23:50:24.000000000 +0900
+@@ -1,11 +1,9 @@
+-TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
+-
+ OBJS_BOOTPACK = bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj \
+ 		int.obj fifo.obj keyboard.obj mouse.obj memory.obj sheet.obj timer.obj \
+ 		mtask.obj window.obj console.obj file.obj
+ 
+-TOOLPATH = ${TOLSET}/z_tools/
+-INCPATH  = ${TOLSET}/z_tools/haribote/
++TOOLPATH = ../z_tools/
++INCPATH  = ../z_tools/haribote/
+ 
+ MAKE     = $(TOOLPATH)make.exe -r
+ NASK     = $(TOOLPATH)nask.exe
+@@ -41,7 +39,6 @@
+ 	$(BIN2OBJ) hankaku.bin hankaku.obj _hankaku
+ 
+ bootpack.bim : $(OBJS_BOOTPACK) Makefile
+-	XCOPY ${TOLSET}\z_tools\haribote ..\z_tools\haribote /I /Y 
+ 	$(OBJ2BIM) @$(RULEFILE) out:bootpack.bim stack:3136k map:bootpack.map \
+ 		$(OBJS_BOOTPACK)
+ # 3MB+64KB=3136KB
+@@ -146,15 +143,36 @@
+ noodle.hrb : noodle.bim Makefile
+ 	$(BIM2HRB) noodle.bim noodle.hrb 40k
+ 
++beepdown.bim : beepdown.obj a_nask.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:beepdown.bim stack:1k map:beepdown.map \
++		beepdown.obj a_nask.obj
++
++beepdown.hrb : beepdown.bim Makefile
++	$(BIM2HRB) beepdown.bim beepdown.hrb 40k
++
++color.bim : color.obj a_nask.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:color.bim stack:1k map:color.map \
++		color.obj a_nask.obj
++
++color.hrb : color.bim Makefile
++	$(BIM2HRB) color.bim color.hrb 56k
++
++color2.bim : color2.obj a_nask.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:color2.bim stack:1k map:color2.map \
++		color2.obj a_nask.obj
++
++color2.hrb : color2.bim Makefile
++	$(BIM2HRB) color2.bim color2.hrb 56k
++
+ haribote.img : ipl10.bin haribote.sys Makefile \
+ 		hello.hrb hello2.hrb a.hrb hello3.hrb hello4.hrb hello5.hrb \
+ 		winhelo.hrb winhelo2.hrb winhelo3.hrb star1.hrb stars.hrb stars2.hrb \
+-		lines.hrb walk.hrb noodle.hrb
+-	$(EDIMG)   imgin:${TOLSET}/z_tools/fdimg0at.tek \
++		lines.hrb walk.hrb noodle.hrb beepdown.hrb color.hrb color2.hrb
++	$(EDIMG)   imgin:../z_tools/fdimg0at.tek \
+ 		wbinimg src:ipl10.bin len:512 from:0 to:0 \
+ 		copy from:haribote.sys to:@: \
+ 		copy from:ipl10.nas to:@: \
+-		copy from:keyboard.c to:@: \
++		copy from:make.bat to:@: \
+ 		copy from:hello.hrb to:@: \
+ 		copy from:hello2.hrb to:@: \
+ 		copy from:a.hrb to:@: \
+@@ -170,6 +188,9 @@
+ 		copy from:lines.hrb to:@: \
+ 		copy from:walk.hrb to:@: \
+ 		copy from:noodle.hrb to:@: \
++		copy from:beepdown.hrb to:@: \
++		copy from:color.hrb to:@: \
++		copy from:color2.hrb to:@: \
+ 		imgout:haribote.img
+ 
+ # 一般規則
+@@ -190,8 +211,8 @@
+ 
+ run :
+ 	$(MAKE) img
+-	$(COPY) haribote.img ${TOLSET}\z_tools\qemu\fdimage0.bin
+-	$(MAKE) -C ${TOLSET}/z_tools/qemu
++	$(COPY) haribote.img ..\z_tools\qemu\fdimage0.bin
++	$(MAKE) -C ../z_tools/qemu
+ 
+ install :
+ 	$(MAKE) img
+--- ../24_day/harib21h/Makefile	2021-03-17 04:51:58.450252855 +0900
++++ ./harib22j/Makefile	2006-01-29 23:56:20.000000000 +0900
+@@ -1,11 +1,9 @@
+-TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
+-
+ OBJS_BOOTPACK = bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj \
+ 		int.obj fifo.obj keyboard.obj mouse.obj memory.obj sheet.obj timer.obj \
+ 		mtask.obj window.obj console.obj file.obj
+ 
+-TOOLPATH = ${TOLSET}/z_tools/
+-INCPATH  = ${TOLSET}/z_tools/haribote/
++TOOLPATH = ../z_tools/
++INCPATH  = ../z_tools/haribote/
+ 
+ MAKE     = $(TOOLPATH)make.exe -r
+ NASK     = $(TOOLPATH)nask.exe
+@@ -41,7 +39,6 @@
+ 	$(BIN2OBJ) hankaku.bin hankaku.obj _hankaku
+ 
+ bootpack.bim : $(OBJS_BOOTPACK) Makefile
+-	XCOPY ${TOLSET}\z_tools\haribote ..\z_tools\haribote /I /Y 
+ 	$(OBJ2BIM) @$(RULEFILE) out:bootpack.bim stack:3136k map:bootpack.map \
+ 		$(OBJS_BOOTPACK)
+ # 3MB+64KB=3136KB
+@@ -146,15 +143,36 @@
+ noodle.hrb : noodle.bim Makefile
+ 	$(BIM2HRB) noodle.bim noodle.hrb 40k
+ 
++beepdown.bim : beepdown.obj a_nask.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:beepdown.bim stack:1k map:beepdown.map \
++		beepdown.obj a_nask.obj
++
++beepdown.hrb : beepdown.bim Makefile
++	$(BIM2HRB) beepdown.bim beepdown.hrb 40k
++
++color.bim : color.obj a_nask.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:color.bim stack:1k map:color.map \
++		color.obj a_nask.obj
++
++color.hrb : color.bim Makefile
++	$(BIM2HRB) color.bim color.hrb 56k
++
++color2.bim : color2.obj a_nask.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:color2.bim stack:1k map:color2.map \
++		color2.obj a_nask.obj
++
++color2.hrb : color2.bim Makefile
++	$(BIM2HRB) color2.bim color2.hrb 56k
++
+ haribote.img : ipl10.bin haribote.sys Makefile \
+ 		hello.hrb hello2.hrb a.hrb hello3.hrb hello4.hrb hello5.hrb \
+ 		winhelo.hrb winhelo2.hrb winhelo3.hrb star1.hrb stars.hrb stars2.hrb \
+-		lines.hrb walk.hrb noodle.hrb
+-	$(EDIMG)   imgin:${TOLSET}/z_tools/fdimg0at.tek \
++		lines.hrb walk.hrb noodle.hrb beepdown.hrb color.hrb color2.hrb
++	$(EDIMG)   imgin:../z_tools/fdimg0at.tek \
+ 		wbinimg src:ipl10.bin len:512 from:0 to:0 \
+ 		copy from:haribote.sys to:@: \
+ 		copy from:ipl10.nas to:@: \
+-		copy from:keyboard.c to:@: \
++		copy from:make.bat to:@: \
+ 		copy from:hello.hrb to:@: \
+ 		copy from:hello2.hrb to:@: \
+ 		copy from:a.hrb to:@: \
+@@ -170,6 +188,9 @@
+ 		copy from:lines.hrb to:@: \
+ 		copy from:walk.hrb to:@: \
+ 		copy from:noodle.hrb to:@: \
++		copy from:beepdown.hrb to:@: \
++		copy from:color.hrb to:@: \
++		copy from:color2.hrb to:@: \
+ 		imgout:haribote.img
+ 
+ # 一般規則
+@@ -190,8 +211,8 @@
+ 
+ run :
+ 	$(MAKE) img
+-	$(COPY) haribote.img ${TOLSET}\z_tools\qemu\fdimage0.bin
+-	$(MAKE) -C ${TOLSET}/z_tools/qemu
++	$(COPY) haribote.img ..\z_tools\qemu\fdimage0.bin
++	$(MAKE) -C ../z_tools/qemu
+ 
+ install :
+ 	$(MAKE) img
+--- ../24_day/harib21h/Makefile	2021-03-17 04:51:58.450252855 +0900
++++ ./harib22i/Makefile	2006-01-29 23:52:46.000000000 +0900
+@@ -1,11 +1,9 @@
+-TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
+-
+ OBJS_BOOTPACK = bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj \
+ 		int.obj fifo.obj keyboard.obj mouse.obj memory.obj sheet.obj timer.obj \
+ 		mtask.obj window.obj console.obj file.obj
+ 
+-TOOLPATH = ${TOLSET}/z_tools/
+-INCPATH  = ${TOLSET}/z_tools/haribote/
++TOOLPATH = ../z_tools/
++INCPATH  = ../z_tools/haribote/
+ 
+ MAKE     = $(TOOLPATH)make.exe -r
+ NASK     = $(TOOLPATH)nask.exe
+@@ -41,7 +39,6 @@
+ 	$(BIN2OBJ) hankaku.bin hankaku.obj _hankaku
+ 
+ bootpack.bim : $(OBJS_BOOTPACK) Makefile
+-	XCOPY ${TOLSET}\z_tools\haribote ..\z_tools\haribote /I /Y 
+ 	$(OBJ2BIM) @$(RULEFILE) out:bootpack.bim stack:3136k map:bootpack.map \
+ 		$(OBJS_BOOTPACK)
+ # 3MB+64KB=3136KB
+@@ -146,15 +143,36 @@
+ noodle.hrb : noodle.bim Makefile
+ 	$(BIM2HRB) noodle.bim noodle.hrb 40k
+ 
++beepdown.bim : beepdown.obj a_nask.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:beepdown.bim stack:1k map:beepdown.map \
++		beepdown.obj a_nask.obj
++
++beepdown.hrb : beepdown.bim Makefile
++	$(BIM2HRB) beepdown.bim beepdown.hrb 40k
++
++color.bim : color.obj a_nask.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:color.bim stack:1k map:color.map \
++		color.obj a_nask.obj
++
++color.hrb : color.bim Makefile
++	$(BIM2HRB) color.bim color.hrb 56k
++
++color2.bim : color2.obj a_nask.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:color2.bim stack:1k map:color2.map \
++		color2.obj a_nask.obj
++
++color2.hrb : color2.bim Makefile
++	$(BIM2HRB) color2.bim color2.hrb 56k
++
+ haribote.img : ipl10.bin haribote.sys Makefile \
+ 		hello.hrb hello2.hrb a.hrb hello3.hrb hello4.hrb hello5.hrb \
+ 		winhelo.hrb winhelo2.hrb winhelo3.hrb star1.hrb stars.hrb stars2.hrb \
+-		lines.hrb walk.hrb noodle.hrb
+-	$(EDIMG)   imgin:${TOLSET}/z_tools/fdimg0at.tek \
++		lines.hrb walk.hrb noodle.hrb beepdown.hrb color.hrb color2.hrb
++	$(EDIMG)   imgin:../z_tools/fdimg0at.tek \
+ 		wbinimg src:ipl10.bin len:512 from:0 to:0 \
+ 		copy from:haribote.sys to:@: \
+ 		copy from:ipl10.nas to:@: \
+-		copy from:keyboard.c to:@: \
++		copy from:make.bat to:@: \
+ 		copy from:hello.hrb to:@: \
+ 		copy from:hello2.hrb to:@: \
+ 		copy from:a.hrb to:@: \
+@@ -170,6 +188,9 @@
+ 		copy from:lines.hrb to:@: \
+ 		copy from:walk.hrb to:@: \
+ 		copy from:noodle.hrb to:@: \
++		copy from:beepdown.hrb to:@: \
++		copy from:color.hrb to:@: \
++		copy from:color2.hrb to:@: \
+ 		imgout:haribote.img
+ 
+ # 一般規則
+@@ -190,8 +211,8 @@
+ 
+ run :
+ 	$(MAKE) img
+-	$(COPY) haribote.img ${TOLSET}\z_tools\qemu\fdimage0.bin
+-	$(MAKE) -C ${TOLSET}/z_tools/qemu
++	$(COPY) haribote.img ..\z_tools\qemu\fdimage0.bin
++	$(MAKE) -C ../z_tools/qemu
+ 
+ install :
+ 	$(MAKE) img
+--- ../24_day/harib21h/Makefile	2021-03-17 04:51:58.450252855 +0900
++++ ./harib22h/Makefile	2006-01-29 23:50:52.000000000 +0900
+@@ -1,11 +1,9 @@
+-TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
+-
+ OBJS_BOOTPACK = bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj \
+ 		int.obj fifo.obj keyboard.obj mouse.obj memory.obj sheet.obj timer.obj \
+ 		mtask.obj window.obj console.obj file.obj
+ 
+-TOOLPATH = ${TOLSET}/z_tools/
+-INCPATH  = ${TOLSET}/z_tools/haribote/
++TOOLPATH = ../z_tools/
++INCPATH  = ../z_tools/haribote/
+ 
+ MAKE     = $(TOOLPATH)make.exe -r
+ NASK     = $(TOOLPATH)nask.exe
+@@ -41,7 +39,6 @@
+ 	$(BIN2OBJ) hankaku.bin hankaku.obj _hankaku
+ 
+ bootpack.bim : $(OBJS_BOOTPACK) Makefile
+-	XCOPY ${TOLSET}\z_tools\haribote ..\z_tools\haribote /I /Y 
+ 	$(OBJ2BIM) @$(RULEFILE) out:bootpack.bim stack:3136k map:bootpack.map \
+ 		$(OBJS_BOOTPACK)
+ # 3MB+64KB=3136KB
+@@ -146,15 +143,36 @@
+ noodle.hrb : noodle.bim Makefile
+ 	$(BIM2HRB) noodle.bim noodle.hrb 40k
+ 
++beepdown.bim : beepdown.obj a_nask.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:beepdown.bim stack:1k map:beepdown.map \
++		beepdown.obj a_nask.obj
++
++beepdown.hrb : beepdown.bim Makefile
++	$(BIM2HRB) beepdown.bim beepdown.hrb 40k
++
++color.bim : color.obj a_nask.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:color.bim stack:1k map:color.map \
++		color.obj a_nask.obj
++
++color.hrb : color.bim Makefile
++	$(BIM2HRB) color.bim color.hrb 56k
++
++color2.bim : color2.obj a_nask.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:color2.bim stack:1k map:color2.map \
++		color2.obj a_nask.obj
++
++color2.hrb : color2.bim Makefile
++	$(BIM2HRB) color2.bim color2.hrb 56k
++
+ haribote.img : ipl10.bin haribote.sys Makefile \
+ 		hello.hrb hello2.hrb a.hrb hello3.hrb hello4.hrb hello5.hrb \
+ 		winhelo.hrb winhelo2.hrb winhelo3.hrb star1.hrb stars.hrb stars2.hrb \
+-		lines.hrb walk.hrb noodle.hrb
+-	$(EDIMG)   imgin:${TOLSET}/z_tools/fdimg0at.tek \
++		lines.hrb walk.hrb noodle.hrb beepdown.hrb color.hrb color2.hrb
++	$(EDIMG)   imgin:../z_tools/fdimg0at.tek \
+ 		wbinimg src:ipl10.bin len:512 from:0 to:0 \
+ 		copy from:haribote.sys to:@: \
+ 		copy from:ipl10.nas to:@: \
+-		copy from:keyboard.c to:@: \
++		copy from:make.bat to:@: \
+ 		copy from:hello.hrb to:@: \
+ 		copy from:hello2.hrb to:@: \
+ 		copy from:a.hrb to:@: \
+@@ -170,6 +188,9 @@
+ 		copy from:lines.hrb to:@: \
+ 		copy from:walk.hrb to:@: \
+ 		copy from:noodle.hrb to:@: \
++		copy from:beepdown.hrb to:@: \
++		copy from:color.hrb to:@: \
++		copy from:color2.hrb to:@: \
+ 		imgout:haribote.img
+ 
+ # 一般規則
+@@ -190,8 +211,8 @@
+ 
+ run :
+ 	$(MAKE) img
+-	$(COPY) haribote.img ${TOLSET}\z_tools\qemu\fdimage0.bin
+-	$(MAKE) -C ${TOLSET}/z_tools/qemu
++	$(COPY) haribote.img ..\z_tools\qemu\fdimage0.bin
++	$(MAKE) -C ../z_tools/qemu
+ 
+ install :
+ 	$(MAKE) img
+--- ../24_day/harib21h/Makefile	2021-03-17 04:51:58.450252855 +0900
++++ ./harib22a/Makefile	2021-03-18 05:07:32.519946635 +0900
+@@ -146,10 +146,17 @@
+ noodle.hrb : noodle.bim Makefile
+ 	$(BIM2HRB) noodle.bim noodle.hrb 40k
+ 
++beepdown.bim : beepdown.obj a_nask.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:beepdown.bim stack:1k map:beepdown.map \
++		beepdown.obj a_nask.obj
++
++beepdown.hrb : beepdown.bim Makefile
++	$(BIM2HRB) beepdown.bim beepdown.hrb 40k
++
+ haribote.img : ipl10.bin haribote.sys Makefile \
+ 		hello.hrb hello2.hrb a.hrb hello3.hrb hello4.hrb hello5.hrb \
+ 		winhelo.hrb winhelo2.hrb winhelo3.hrb star1.hrb stars.hrb stars2.hrb \
+-		lines.hrb walk.hrb noodle.hrb
++		lines.hrb walk.hrb noodle.hrb beepdown.hrb
+ 	$(EDIMG)   imgin:${TOLSET}/z_tools/fdimg0at.tek \
+ 		wbinimg src:ipl10.bin len:512 from:0 to:0 \
+ 		copy from:haribote.sys to:@: \
+@@ -170,6 +177,7 @@
+ 		copy from:lines.hrb to:@: \
+ 		copy from:walk.hrb to:@: \
+ 		copy from:noodle.hrb to:@: \
++		copy from:beepdown.hrb to:@: \
+ 		imgout:haribote.img
+ 
+ # 一般規則
+--- ../24_day/harib21h/Makefile	2021-03-17 04:51:58.450252855 +0900
++++ ./harib22c/Makefile	2006-01-29 23:48:04.000000000 +0900
+@@ -1,11 +1,9 @@
+-TOLSET     = F:\TEMP\hariboteos\hariboteos\tolset
+-
+ OBJS_BOOTPACK = bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj \
+ 		int.obj fifo.obj keyboard.obj mouse.obj memory.obj sheet.obj timer.obj \
+ 		mtask.obj window.obj console.obj file.obj
+ 
+-TOOLPATH = ${TOLSET}/z_tools/
+-INCPATH  = ${TOLSET}/z_tools/haribote/
++TOOLPATH = ../z_tools/
++INCPATH  = ../z_tools/haribote/
+ 
+ MAKE     = $(TOOLPATH)make.exe -r
+ NASK     = $(TOOLPATH)nask.exe
+@@ -41,7 +39,6 @@
+ 	$(BIN2OBJ) hankaku.bin hankaku.obj _hankaku
+ 
+ bootpack.bim : $(OBJS_BOOTPACK) Makefile
+-	XCOPY ${TOLSET}\z_tools\haribote ..\z_tools\haribote /I /Y 
+ 	$(OBJ2BIM) @$(RULEFILE) out:bootpack.bim stack:3136k map:bootpack.map \
+ 		$(OBJS_BOOTPACK)
+ # 3MB+64KB=3136KB
+@@ -146,15 +143,36 @@
+ noodle.hrb : noodle.bim Makefile
+ 	$(BIM2HRB) noodle.bim noodle.hrb 40k
+ 
++beepdown.bim : beepdown.obj a_nask.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:beepdown.bim stack:1k map:beepdown.map \
++		beepdown.obj a_nask.obj
++
++beepdown.hrb : beepdown.bim Makefile
++	$(BIM2HRB) beepdown.bim beepdown.hrb 40k
++
++color.bim : color.obj a_nask.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:color.bim stack:1k map:color.map \
++		color.obj a_nask.obj
++
++color.hrb : color.bim Makefile
++	$(BIM2HRB) color.bim color.hrb 56k
++
++color2.bim : color2.obj a_nask.obj Makefile
++	$(OBJ2BIM) @$(RULEFILE) out:color2.bim stack:1k map:color2.map \
++		color2.obj a_nask.obj
++
++color2.hrb : color2.bim Makefile
++	$(BIM2HRB) color2.bim color2.hrb 56k
++
+ haribote.img : ipl10.bin haribote.sys Makefile \
+ 		hello.hrb hello2.hrb a.hrb hello3.hrb hello4.hrb hello5.hrb \
+ 		winhelo.hrb winhelo2.hrb winhelo3.hrb star1.hrb stars.hrb stars2.hrb \
+-		lines.hrb walk.hrb noodle.hrb
+-	$(EDIMG)   imgin:${TOLSET}/z_tools/fdimg0at.tek \
++		lines.hrb walk.hrb noodle.hrb beepdown.hrb color.hrb color2.hrb
++	$(EDIMG)   imgin:../z_tools/fdimg0at.tek \
+ 		wbinimg src:ipl10.bin len:512 from:0 to:0 \
+ 		copy from:haribote.sys to:@: \
+ 		copy from:ipl10.nas to:@: \
+-		copy from:keyboard.c to:@: \
++		copy from:make.bat to:@: \
+ 		copy from:hello.hrb to:@: \
+ 		copy from:hello2.hrb to:@: \
+ 		copy from:a.hrb to:@: \
+@@ -170,6 +188,9 @@
+ 		copy from:lines.hrb to:@: \
+ 		copy from:walk.hrb to:@: \
+ 		copy from:noodle.hrb to:@: \
++		copy from:beepdown.hrb to:@: \
++		copy from:color.hrb to:@: \
++		copy from:color2.hrb to:@: \
+ 		imgout:haribote.img
+ 
+ # 一般規則
+@@ -190,8 +211,8 @@
+ 
+ run :
+ 	$(MAKE) img
+-	$(COPY) haribote.img ${TOLSET}\z_tools\qemu\fdimage0.bin
+-	$(MAKE) -C ${TOLSET}/z_tools/qemu
++	$(COPY) haribote.img ..\z_tools\qemu\fdimage0.bin
++	$(MAKE) -C ../z_tools/qemu
+ 
+ install :
+ 	$(MAKE) img
